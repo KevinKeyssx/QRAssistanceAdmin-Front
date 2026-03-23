@@ -26,6 +26,9 @@
 	},
 	"dependencies": {
 		"@formkit/tempo": "^1.0.0",
-		"canvas-confetti": "^1.9.4"
+		"canvas-confetti": "^1.9.4",
+		"html2canvas": "^1.4.1",
+		"jspdf": "^4.2.1",
+		"qr-code-styling": "^1.9.2"
 	}
 }
