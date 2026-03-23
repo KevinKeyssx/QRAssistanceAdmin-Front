@@ -15,7 +15,7 @@
 </script>
 
 <svelte:head>
-	<title>Asistencia QR · QRAsistencia</title>
+	<title>Asistencia QR · QRAsistenciaAdmin</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
@@ -28,7 +28,7 @@
                 </div>
 
                 <h1 class="text-2xl font-bold text-lds-navy dark:text-lds-gold">
-                    Asistencia QR
+                    Administrador Asistencia QR
                 </h1>
             </div>
 
