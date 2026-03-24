@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	const links = [
 		{ href: '/dashboard/qr-generator', label: 'QR Generator' },
@@ -14,7 +14,7 @@
 			<li>
 				<a
 					href  = { link.href }
-					class = {`whitespace-nowrap px-3 py-1.5 rounded-md text-sm transition-colors duration-200 ${ $page.url.pathname === link.href ? 'bg-lds-navy text-white dark:bg-lds-gold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }`}
+					class = {`whitespace-nowrap px-3 py-1.5 rounded-md text-sm transition-colors duration-200 ${ page.url.pathname === link.href ? 'bg-lds-navy text-white dark:bg-lds-gold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }`}
 				>
 					{ link.label }
 				</a>
