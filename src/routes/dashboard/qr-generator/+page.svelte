@@ -6,13 +6,12 @@
     import { toast }        from 'svelte-sonner';
 
 	import { PUBLIC_QR_BASE_URL }   from '$env/static/public';
-    import ClassQRCard              from './components/ClassQRCard.svelte';
     import { formatDate }           from '$lib/utils/tempo';
 	import { LDS_CLASSES }          from '$lib/utils/classes';
     import QRIcon                   from '$lib/icons/QRIcon.svelte';
     import Dialog                   from '$lib/components/shared/Dialog.svelte';
-
-    import GenerateNewQR from './components/generateNewQR.svelte';
+    import ClassQRCard              from './components/ClassQRCard.svelte';
+    import GenerateNewQR            from './components/generateNewQR.svelte';
 
 
     let activeTab       = $state<'today' | 'history'>( 'today' );
@@ -98,9 +97,9 @@
 
     let groupedHistory = $derived.by( () => {
         if ( !historyQuery.data ) return {};
-        
+
         const grouped : Record<string, any[]> = {};
-        
+
         historyQuery.data.forEach( item => {
             const monthYear = item.date.toLocaleString( 'es-ES', { month: 'long', year: 'numeric' } ).replace( /^\w/, c => c.toUpperCase() );
             
@@ -114,7 +113,7 @@
 
             grouped[monthYear].push({ ...item, formattedDate });
         });
-        
+
         return grouped;
     });
 </script>
