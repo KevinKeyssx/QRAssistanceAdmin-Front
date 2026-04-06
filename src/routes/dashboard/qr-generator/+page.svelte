@@ -52,7 +52,7 @@
 
     // Mock Database Fetcher for TanStack Query
 	const fetchHistoricalQRs = async () => {
-		await new Promise( res => setTimeout( res, 800 ) ); 
+		await new Promise( res => setTimeout( res, 800 ));
 
 		return [
 			{
@@ -102,11 +102,11 @@
 
         historyQuery.data.forEach( item => {
             const monthYear = item.date.toLocaleString( 'es-ES', { month: 'long', year: 'numeric' } ).replace( /^\w/, c => c.toUpperCase() );
-            
+
             if ( !grouped[monthYear] ) {
                 grouped[monthYear] = [];
             }
-            
+
             const dayString     = item.date.toLocaleString( 'es-ES', { weekday: 'long' } );
             const dayStringCap  = dayString.charAt( 0 ).toUpperCase() + dayString.slice( 1 );
             const formattedDate = `${ dayStringCap } ${ item.date.getDate() }`;
@@ -123,43 +123,37 @@
 	<title>Generador QR | Dashboard</title>
 </svelte:head>
 
+
 <main class="flex flex-col gap-6 w-full max-w-6xl mx-auto align-top">
 	<div class="flex justify-between items-center print:hidden">
-		<h1 class="text-3xl font-bold text-gray-900 dark:text-white">Generar Asistencias QR</h1>
+		<h1 class="text-3xl font-bold text-gray-900 dark:text-white">Generador QR</h1>
 
-        <!-- {#if isSunday}
-			<span class="bg-lds-navy text-white dark:bg-lds-gold px-3 py-1 rounded-full text-sm font-semibold shadow-sm">
-				Domingo de Asistencia
-			</span>
-		{/if} -->
-
-        <button 
+        <button
             onclick = { () => isDialogOpen = true }
             class   = "bg-lds-navy text-white dark:bg-lds-gold dark:text-gray-900 px-4 py-1.5 rounded-full text-sm font-semibold shadow-sm flex gap-1.5 items-center hover:opacity-90 transition-all active:scale-95"
         >
             <QRIcon />
-
-            Programar nuevo QR
+            <span class="hidden sm:flex">Programar nuevo QR</span>
         </button>
 	</div>
 
-    <!-- TABS COMPONENT -->
+    <!-- TABS -->
     <div class="flex bg-gray-100 dark:bg-gray-800/80 p-1.5 rounded-xl w-full max-w-sm shadow-sm relative print:hidden self-start">
-        <button 
+        <button
             onclick  = { () => activeTab = 'today' }
             class    = "relative flex-1 py-1.5 text-sm font-semibold transition-colors duration-300 z-10 { activeTab === 'today' ? 'text-gray-900 dark:text-gray-900' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200' }"
         >
             Generados hoy
         </button>
 
-        <button 
+        <button
             onclick  = { () => activeTab = 'history' }
             class    = "relative flex-1 py-1.5 text-sm font-semibold transition-colors duration-300 z-10 { activeTab === 'history' ? 'text-gray-900 dark:text-gray-900' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200' }"
         >
             Historial
         </button>
 
-        <div 
+        <div
             class = "absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white dark:bg-lds-gold rounded-lg shadow-sm transition-transform duration-300 ease-out"
             style = "transform: translateX({ activeTab === 'today' ? '0' : 'calc(100% + 4px)' });"
         ></div>
@@ -187,7 +181,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 relative">
                 {#each historiQR as item ( item.classSlug )}
-                    <ClassQRCard 
+                    <ClassQRCard
                         appClass = { item.appClass }
                         url      = { item.url }
                         date     = { formatDate( item.date ) }
@@ -203,7 +197,6 @@
             </div>
         </div>
     {/if}
-
 
     {#if activeTab === 'history'}
         <div in:fly={{ y: 20, duration: 400 }} class="w-full space-y-8 pb-12">
@@ -227,7 +220,6 @@
                             {#each items as item}
                                 <div class="flex items-center justify-between p-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                     <div class="flex items-center gap-5">
-                                        <!-- Generico QR Icon -->
                                         <div class="w-14 h-14 bg-gray-100 dark:bg-gray-900 rounded-xl flex items-center justify-center text-lds-navy dark:text-lds-gold shrink-0 border border-gray-200 dark:border-gray-700">
                                             <QRIcon size={32} />
                                         </div>
@@ -262,13 +254,13 @@
 </main>
 
 
-<Dialog 
+<Dialog
     open        = { isDialogOpen }
     title       = "Crear QR Personalizado"
     description = "Configura los parámetros detallados para crear un código QR de evento especial o uso extraordinario."
     onClose     = { () => isDialogOpen = false }
 >
-    <GenerateNewQR 
+    <GenerateNewQR
         onCancel   = { () => isDialogOpen = false }
         onGenerate = { handleGenerateNewQR }
     />
