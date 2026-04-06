@@ -4,7 +4,7 @@
 	const links = [
 		{ href: '/dashboard/qr-generator',  label: 'Generador QR' },
 		{ href: '/dashboard/members',       label: 'Miembros' },
-		{ href: '/dashboard/graphics',      label: 'Gráficos' }
+		{ href: '/dashboard/attendance',    label: 'Asistencias' }
 	];
 </script>
 
