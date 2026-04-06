@@ -32,7 +32,7 @@
                 </h1>
             </div>
 
-            <img src="/symbolFull.webp" alt="Logo ISUD" class="fit-content">
+            <img src="/logo.avif" alt="Logo" class="fit-content size-40">
 
             <p class="text-sm text-gray-500 dark:text-gray-400">
 				La Iglesia de Jesucristo de los Santos de los Últimos Días
