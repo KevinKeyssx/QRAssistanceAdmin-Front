@@ -9,22 +9,34 @@
 
     import type { LDSClass }    from '$lib/types';
     import { isDark }           from '$lib/stores/themeStore';
+    import Dialog               from '$lib/components/shared/Dialog.svelte';
+    import ConfirmDelete        from '$lib/components/shared/ConfirmDelete.svelte';
 
 
-    interface Props {
-        appClass    : LDSClass;
-        url         : string;
-        date        : string;
-        disabled?   : boolean;
-    }
+	export interface Props {
+		appClass	: LDSClass;
+		url			: string;
+		date		: string;
+		disabled?	: boolean;
+		canManage?	: boolean;
+		onEdit?		: () => void;
+		onDelete?	: () => void;
+	}
 
 
     let {
-		appClass,
-		url,
-		date,
-		disabled = false,
-	}: Props = $props();
+        appClass,
+        url,
+        date,
+        disabled  = false,
+        canManage = true,
+        onEdit,
+        onDelete
+    }: Props = $props();
+
+
+    let isConfirmOpen   = $state( false );
+    let isDeleting      = $state( false );
 
 
     let qrRef           : HTMLElement;
@@ -194,41 +206,127 @@
 
         toast.success( 'PDF descargado correctamente' );
 	}
+
+
+    async function confirmDelete() {
+        if ( !onDelete ) return;
+
+        isDeleting = true;
+        try {
+            await onDelete();
+            isConfirmOpen = false;
+        } finally {
+            isDeleting = false;
+        }
+    }
 </script>
 
-
 <div
-    bind:this={cardRef}
-    class={`card-container relative border rounded-xl overflow-hidden shadow-sm bg-white dark:bg-gray-800 transition-all duration-300 ${ disabled ? 'opacity-60 grayscale' : 'hover:shadow-md' } border-gray-200 dark:border-gray-700`}
+    bind:this = { cardRef }
+    class     = "group relative flex flex-col bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 dark:hover:shadow-black/20 transition-all duration-500 overflow-hidden { disabled ? 'opacity-50 grayscale pointer-events-none' : '' }"
 >
-	<div class="p-4 flex flex-col items-center gap-4 w-full">
-		<h3 class="font-bold text-lg text-gray-900 dark:text-gray-100 text-center">
-			{ appClass.label }
-		</h3>
+    <!-- Acciones de Gestión (Top Right) -->
+    {#if canManage && ( onEdit || onDelete )}
+        <div class="absolute top-4 right-4 flex items-center gap-1.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 print:hidden">
+            {#if onEdit}
+                <button
+                    onclick = { onEdit }
+                    class   = "p-2 rounded-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-md text-gray-500 hover:text-lds-navy dark:hover:text-lds-gold border border-gray-100 dark:border-gray-700 shadow-sm transition-all active:scale-90"
+                    title   = "Editar programación"
+                >
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                </button>
+            {/if}
 
-		<p class="text-xs text-gray-500 dark:text-gray-400">
-			{ date }
-		</p>
+            {#if onDelete}
+                <button
+                    onclick = { () => isConfirmOpen = true }
+                    class   = "p-2 rounded-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-md text-gray-500 hover:text-red-500 border border-gray-100 dark:border-gray-700 shadow-sm transition-all active:scale-90"
+                    title   = "Eliminar código"
+                >
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            {/if}
+        </div>
+    {/if}
 
-		<!-- Contenedor del QR -->
-		<div class="bg-white p-2 rounded-lg flex justify-center items-center w-full" bind:this={qrRef}></div>
+    <div class="p-6 flex flex-col items-center gap-5 w-full">
+        <!-- Encabezado de la Tarjeta -->
+        <div class="flex flex-col items-center gap-2">
+            <div class="w-12 h-12 rounded-xl bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-lds-navy dark:text-lds-gold shadow-inner transition-transform duration-500 group-hover:scale-110">
+                {#if appClass.icon}
+                    {@const Icon = appClass.icon}
+                    <Icon class="w-6 h-6" />
+                {:else}
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                {/if}
+            </div>
 
-		<div class="flex gap-2 w-full mt-2 print:hidden">
-			<button
-				onclick  = { handlePrint }
-				{disabled}
-				class    = "flex-1 py-2 px-4 rounded-lg bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-			>
-				Imprimir
-			</button>
+            <h3 class="font-bold text-xl text-gray-900 dark:text-gray-100 text-center tracking-tight leading-tight px-4">
+                { appClass.label }
+            </h3>
 
-			<button
-				onclick  = { handleDownloadPDF }
-				{disabled}
-				class    = "flex-1 py-2 px-4 rounded-lg bg-lds-navy text-white hover:opacity-90 transition-opacity duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed dark:bg-lds-gold cursor-pointer"
-			>
-				PDF
-			</button>
-		</div>
-	</div>
+            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700/60 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                { date }
+            </div>
+        </div>
+
+        <!-- Contenedor del QR con Efecto de Profundidad -->
+        <div class="relative w-max p-4 bg-white rounded-xl shadow-inner border border-gray-100 transition-all duration-500 group-hover:shadow-lg group-hover:shadow-gray-200/50" bind:this={ qrRef }>
+            <!-- Glow sutil de fondo -->
+            <div class="absolute inset-0 bg-lds-navy/5 dark:bg-lds-gold/5 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10"></div>
+        </div>
+
+        <!-- Botones de Acción Principales -->
+        <div class="grid grid-cols-2 gap-3 w-full mt-0 print:hidden">
+            <button
+                onclick = { handlePrint }
+                { disabled }
+                class   = "flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gray-50 text-gray-700 dark:bg-gray-700/50 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-200/50 dark:border-gray-600/50 transition-all font-bold text-sm shadow-sm active:scale-95 disabled:opacity-50"
+            >
+                <!-- <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.844l.827-4.708L12 7.156l4.453 1.98.827 4.708M12 21V7.156M12 21a9.003 9.003 0 008.384-5.69M12 21a9.003 9.003 0 01-8.384-5.69M12 7.156c1.116 0 2.11-.453 2.828-1.185A3.987 3.987 0 0015.844 3h-7.688c-.372 0-.742.062-1.096.185a3.987 3.987 0 00-2.828 1.185 3.987 3.987 0 00-1.185 2.828l.827 4.708" />
+                </svg> -->
+                <span>Imprimir</span>
+            </button>
+
+            <button
+                onclick = { handleDownloadPDF }
+                { disabled }
+                class   = "flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-lds-navy text-white dark:bg-lds-gold dark:text-gray-900 shadow-md shadow-lds-navy/20 dark:shadow-lds-gold/20 hover:opacity-90 transition-all font-bold text-sm active:scale-95 disabled:opacity-50"
+            >
+                <!-- <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg> -->
+                <span>PDF</span>
+            </button>
+        </div>
+    </div>
 </div>
+
+
+<!-- Dialog de Confirmación de Eliminación -->
+<Dialog
+    open    = { isConfirmOpen }
+    onClose = { () => isConfirmOpen = false }
+>
+    <ConfirmDelete
+        open        = { isConfirmOpen }
+        onConfirm   = { confirmDelete }
+        onClose     = { () => isConfirmOpen = false }
+        isPending   = { isDeleting }
+        title       = "¿Eliminar código QR?"
+        description = "Esta programación se eliminará permanentemente. Esta acción no se puede deshacer."
+        itemName    = { appClass.label }
+        itemExtra   = { date }
+    />
+</Dialog>
