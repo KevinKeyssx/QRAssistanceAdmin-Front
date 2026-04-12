@@ -4,7 +4,8 @@
 	const links = [
 		{ href: '/dashboard/qr-generator',  label: 'Generador QR' },
 		{ href: '/dashboard/members',       label: 'Miembros' },
-		{ href: '/dashboard/attendance',    label: 'Asistencias' }
+		{ href: '/dashboard/attendance',    label: 'Asistencias' },
+		{ href: '/dashboard/survey',        label: 'Encuestas' }
 	];
 </script>
 
