@@ -15,13 +15,14 @@ const getInitialTheme = (): boolean => {
 };
 
 
-export const isDark = writable(getInitialTheme());
+export const isDark = writable( getInitialTheme() );
 
 
-isDark.subscribe(value => {
-    if (typeof localStorage !== 'undefined') {
-        localStorage.setItem(DARK_MODE_KEY, String(value));
-        document.documentElement.classList.toggle('dark', value);
+isDark.subscribe( value => {
+    if ( typeof localStorage !== 'undefined' ) {
+        localStorage.setItem( DARK_MODE_KEY, String( value ));
+
+        document.documentElement.classList.toggle( 'dark', value );
     }
 });
 
