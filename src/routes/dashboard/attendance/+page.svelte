@@ -1,5 +1,6 @@
 <script lang="ts">
     import { getLocalTimeZone, today } from "@internationalized/date";
+
     import Calendar from "$lib/components/shared/Calendar.svelte";
 
     let dateValue = $state( today( getLocalTimeZone() ) );
@@ -7,7 +8,7 @@
 
 
 <svelte:head>
-    <title>Asistencias | Dashboard</title>
+    <title>Asistencias | Dashboard | QR Assistance</title>
 </svelte:head>
 
 <main class="flex flex-col gap-6 w-full max-w-6xl mx-auto align-top">
