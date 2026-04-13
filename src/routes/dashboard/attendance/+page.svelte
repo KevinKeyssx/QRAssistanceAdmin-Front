@@ -1,45 +1,57 @@
 <script lang="ts">
-    import { getLocalTimeZone, today } from "@internationalized/date";
+    import Tabs               from "$lib/components/shared/Tabs.svelte";
+    import MainChartViewer    from "./components/analytics/MainChartViewer.svelte";
+    import RetentionViewer    from "./components/analytics/RetentionViewer.svelte";
+    import LoyaltyViewer      from "./components/analytics/LoyaltyViewer.svelte";
+    import PunctualityViewer  from "./components/analytics/PunctualityViewer.svelte";
+    import GrowthViewer       from "./components/analytics/GrowthViewer.svelte";
 
-    import Calendar from "$lib/components/shared/Calendar.svelte";
+    let activeTab = $state<'main' | 'retention' | 'loyalty' | 'punctuality' | 'growth'>( 'main' );
 
-    let dateValue = $state( today( getLocalTimeZone() ) );
+    const tabOptions = [
+        { value: 'main', label: 'General' },
+        { value: 'retention', label: 'Retención' },
+        { value: 'loyalty', label: 'Fidelidad' },
+        { value: 'punctuality', label: 'Puntualidad' },
+        { value: 'growth', label: 'Crecimiento' }
+    ];
 </script>
 
 
 <svelte:head>
-    <title>Asistencias | Dashboard | QR Assistance</title>
+    <title>Estadísticas y Analíticas | Dashboard | QR Assistance</title>
 </svelte:head>
 
 <main class="flex flex-col gap-6 w-full max-w-6xl mx-auto align-top">
     <div class="flex flex-col gap-2">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Asistencias</h1>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Analíticas de Asistencia</h1>
         <p class="text-sm text-gray-500 dark:text-gray-400">
-            Gestiona y visualiza la asistencia seleccionando una fecha en el calendario.
+            Revisa indicadores dinámicos, retención, puntualidad, fidelidad y crecimiento de tu congregación.
         </p>
     </div>
 
-    <div class="flex flex-col md:flex-row gap-8 items-start">
-        <!-- Contenedor del Calendario -->
-        <div class="shrink-0 flex flex-col gap-3">
-            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                Fecha de registro
-            </h2>
-            <Calendar bind:value={ dateValue } />
+    <!-- TABS -->
+    <Tabs bind:activeTab={ activeTab } options={ tabOptions } />
 
-            {#if dateValue}
-                <div class="text-sm font-medium text-lds-navy dark:text-lds-gold px-1 mt-2">
-                    Seleccionado: { dateValue.toString() }
-                </div>
-            {/if}
-        </div>
+    <div class="w-full flex-1">
+        {#if activeTab === 'main'}
+            <MainChartViewer />
+        {/if}
 
-        <!-- Espacio para la tabla o lista de asistencias -->
-        <div class="flex-1 w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 min-h-[400px] flex items-center justify-center">
-            <div class="text-center text-gray-500 dark:text-gray-400">
-                <p>Selecciona una fecha para ver las asistencias de ese día.</p>
-                <p class="text-xs mt-1">(La tabla o lista se renderizará aquí)</p>
-            </div>
-        </div>
+        {#if activeTab === 'retention'}
+            <RetentionViewer />
+        {/if}
+
+        {#if activeTab === 'loyalty'}
+            <LoyaltyViewer />
+        {/if}
+
+        {#if activeTab === 'punctuality'}
+            <PunctualityViewer />
+        {/if}
+
+        {#if activeTab === 'growth'}
+            <GrowthViewer />
+        {/if}
     </div>
 </main>
