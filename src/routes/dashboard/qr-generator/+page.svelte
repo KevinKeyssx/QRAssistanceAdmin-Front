@@ -1,6 +1,7 @@
 <script lang="ts">
     import QRIcon           from '$lib/icons/QRIcon.svelte';
     import Dialog           from '$lib/components/shared/Dialog.svelte';
+    import Tabs             from '$lib/components/shared/Tabs.svelte';
     import GenerateNewQR    from './components/generateNewQR.svelte';
     import QRHistory        from './components/QRHistory.svelte';
     import QrsToday         from './components/QrsToday.svelte';
@@ -11,6 +12,11 @@
     let isDialogOpen    = $state( false );
     let qrToEdit        = $state<any>( null );
 
+
+    const tabOptions = [
+        { value: 'today', label: 'Generados hoy' },
+        { value: 'history', label: 'Historial' }
+    ];
 
     function handleOpenCreate(): void {
         qrToEdit     = null;
@@ -49,26 +55,7 @@
 	</div>
 
     <!-- TABS -->
-    <div class="flex bg-gray-100 dark:bg-gray-800/80 p-1.5 rounded-xl w-full max-w-sm shadow-sm relative print:hidden self-start">
-        <button
-            onclick  = { () => activeTab = 'today' }
-            class    = "relative flex-1 py-1.5 text-sm font-semibold transition-colors duration-300 z-10 { activeTab === 'today' ? 'text-gray-900 dark:text-gray-900' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200' }"
-        >
-            Generados hoy
-        </button>
-
-        <button
-            onclick  = { () => activeTab = 'history' }
-            class    = "relative flex-1 py-1.5 text-sm font-semibold transition-colors duration-300 z-10 { activeTab === 'history' ? 'text-gray-900 dark:text-gray-900' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200' }"
-        >
-            Historial
-        </button>
-
-        <div
-            class = "absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white dark:bg-lds-gold rounded-lg shadow-sm transition-transform duration-300 ease-out"
-            style = "transform: translateX({ activeTab === 'today' ? '0' : 'calc(100% + 4px)' });"
-        ></div>
-    </div>
+    <Tabs bind:activeTab={ activeTab } options={ tabOptions } />
 
     {#if activeTab === 'today'}
         <QrsToday onEdit={ handleEdit } />
