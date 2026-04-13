@@ -6,6 +6,6 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit(), devtoolsJson()],
 	ssr: {
-		noExternal: ['svelte-sonner', '@tanstack/svelte-query']
+		noExternal: ['svelte-sonner', '@tanstack/svelte-query', 'lucide-svelte', 'chart.js']
 	}
 });
