@@ -102,13 +102,18 @@
     {#if todayQuery.isPending}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {#each [ 1, 2, 3, 4 ] as _}
-                <div class="h-[300px] w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 animate-pulse p-4 space-y-4">
-                    <div class="h-6 w-3/4 bg-gray-200 dark:bg-gray-700 rounded-md mx-auto"></div>
-                    <div class="h-3 w-1/2 bg-gray-200 dark:bg-gray-700 rounded-md mx-auto"></div>
-                    <div class="w-full aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-                    <div class="flex gap-2">
-                        <div class="h-10 flex-1 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-                        <div class="h-10 flex-1 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                <div class="w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 animate-pulse p-6 flex flex-col items-center gap-5">
+                    <div class="flex flex-col items-center gap-3 w-full">
+                        <div class="w-12 h-12 rounded-xl bg-gray-200 dark:bg-gray-700"></div>
+                        <div class="h-6 w-3/4 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+                        <div class="h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                    </div>
+
+                    <div class="w-44 aspect-square bg-gray-200 dark:bg-gray-700 rounded-xl shadow-inner"></div>
+
+                    <div class="grid grid-cols-2 gap-3 w-full">
+                        <div class="h-11 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                        <div class="h-11 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
                     </div>
                 </div>
             {/each}
