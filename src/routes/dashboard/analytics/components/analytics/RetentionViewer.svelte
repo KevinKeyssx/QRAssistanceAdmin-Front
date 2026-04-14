@@ -13,15 +13,16 @@
     }                         from '$lib/services/fetch.service';
     import type { 
         RetentionDTO 
-    }                         from '$lib/models/analitycs/analityc.model';
-    import { METHOD } from '$lib/services/http-codes';
+    }                         from '$lib/models/analytics/analytic.model';
+    import { METHOD }         from '$lib/services/http-codes';
+    import { ENDPOINT }       from '$lib/utils/consts/endpoints';
 
     
     const retentionQuery = createQuery( () => ({
         queryKey    : [ 'analytics', 'retention' ],
         queryFn     : async (): Promise<RetentionDTO> => {
             const result = await connectRequest<RetentionDTO>({
-                endpoint    : 'analitycs/retention',
+                endpoint    : ENDPOINT.ANALYTICS.RETENTION,
                 method      : METHOD.GET,
                 isInternal  : true
             });

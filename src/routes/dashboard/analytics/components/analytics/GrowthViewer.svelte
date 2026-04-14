@@ -13,8 +13,9 @@
     }                         from '$lib/services/fetch.service';
     import type { 
         GrowthItemDTO 
-    }                         from '$lib/models/analitycs/analityc.model';
-    import { METHOD } from '$lib/services/http-codes';
+    }                         from '$lib/models/analytics/analytic.model';
+    import { METHOD }         from '$lib/services/http-codes';
+    import { ENDPOINT }       from '$lib/utils/consts/endpoints';
 
     
     let year = $state( new Date().getFullYear() );
@@ -23,7 +24,7 @@
         queryKey    : [ 'analytics', 'growth', year ],
         queryFn     : async (): Promise<GrowthItemDTO[]> => {
             const result = await connectRequest<GrowthItemDTO[]>({
-                endpoint    : `analitycs/growth?year=${ year }`,
+                endpoint    : `${ ENDPOINT.ANALYTICS.GROWTH }?year=${ year }`,
                 method      : METHOD.GET,
                 isInternal  : true
             });

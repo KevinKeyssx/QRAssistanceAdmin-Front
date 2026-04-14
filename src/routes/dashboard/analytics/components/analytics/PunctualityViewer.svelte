@@ -14,14 +14,15 @@
     import { METHOD }         from '$lib/services/http-codes';
     import type { 
         PunctualityItemDTO 
-    }                         from '$lib/models/analitycs/analityc.model';
+    }                         from '$lib/models/analytics/analytic.model';
+    import { ENDPOINT }       from '$lib/utils/consts/endpoints';
 
     
     const punctualityQuery = createQuery( () => ({
         queryKey    : [ 'analytics', 'punctuality' ],
         queryFn     : async (): Promise<PunctualityItemDTO[]> => {
             const result = await connectRequest<PunctualityItemDTO[]>({
-                endpoint    : 'analitycs/punctuality',
+                endpoint    : ENDPOINT.ANALYTICS.PUNCTUALITY,
                 method      : METHOD.GET,
                 isInternal  : true
             });

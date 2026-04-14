@@ -14,14 +14,15 @@
     import { METHOD }         from '$lib/services/http-codes';
     import type { 
         LoyaltyStatusDTO 
-    }                         from '$lib/models/analitycs/analityc.model';
+    }                         from '$lib/models/analytics/analytic.model';
+    import { ENDPOINT }       from '$lib/utils/consts/endpoints';
 
     
     const loyaltyQuery = createQuery( () => ({
         queryKey    : [ 'analytics', 'loyalty' ],
         queryFn     : async (): Promise<LoyaltyStatusDTO[]> => {
             const result = await connectRequest<LoyaltyStatusDTO[]>({
-                endpoint    : 'analitycs/loyalty',
+                endpoint    : ENDPOINT.ANALYTICS.LOYALTY,
                 method      : METHOD.GET,
                 isInternal  : true
             });

@@ -14,8 +14,9 @@
     import { METHOD }         from '$lib/services/http-codes';
     import type { 
         MainChartItemDTO 
-    }                         from '$lib/models/analitycs/analityc.model';
+    }                         from '$lib/models/analytics/analytic.model';
     import { LDS_CLASSES }    from '$lib/utils/classes';
+    import { ENDPOINT }       from '$lib/utils/consts/endpoints';
 
     
     let year   = $state( new Date().getFullYear().toString() );
@@ -39,7 +40,7 @@
             queryKey    : [ 'analytics', 'main-chart', year, month, qrType ],
             queryFn     : async (): Promise<MainChartItemDTO[]> => {
                 const result = await connectRequest<MainChartItemDTO[]>({
-                    endpoint    : `analitycs/main-chart?${ queryParams.toString() }`,
+                    endpoint    : `${ ENDPOINT.ANALYTICS.MAIN }?${ queryParams.toString() }`,
                     method      : METHOD.GET,
                     isInternal  : true
                 });
