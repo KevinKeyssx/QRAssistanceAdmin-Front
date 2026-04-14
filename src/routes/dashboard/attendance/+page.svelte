@@ -1,57 +1,13 @@
 <script lang="ts">
-    import Tabs               from "$lib/components/shared/Tabs.svelte";
-    import MainChartViewer    from "./components/analytics/MainChartViewer.svelte";
-    import RetentionViewer    from "./components/analytics/RetentionViewer.svelte";
-    import LoyaltyViewer      from "./components/analytics/LoyaltyViewer.svelte";
-    import PunctualityViewer  from "./components/analytics/PunctualityViewer.svelte";
-    import GrowthViewer       from "./components/analytics/GrowthViewer.svelte";
-
-    let activeTab = $state<'main' | 'retention' | 'loyalty' | 'punctuality' | 'growth'>( 'main' );
-
-    const tabOptions = [
-        { value: 'main', label: 'General' },
-        { value: 'retention', label: 'Retención' },
-        { value: 'loyalty', label: 'Fidelidad' },
-        { value: 'punctuality', label: 'Puntualidad' },
-        { value: 'growth', label: 'Crecimiento' }
-    ];
 </script>
 
 
 <svelte:head>
-    <title>Estadísticas y Analíticas | Dashboard | QR Assistance</title>
+    <title>Asistencias | Dashboard | QR Assistance</title>
 </svelte:head>
 
 <main class="flex flex-col gap-6 w-full max-w-6xl mx-auto align-top">
     <div class="flex flex-col gap-2">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Analíticas de Asistencia</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-            Revisa indicadores dinámicos, retención, puntualidad, fidelidad y crecimiento de tu congregación.
-        </p>
-    </div>
-
-    <!-- TABS -->
-    <Tabs bind:activeTab={ activeTab } options={ tabOptions } />
-
-    <div class="w-full flex-1">
-        {#if activeTab === 'main'}
-            <MainChartViewer />
-        {/if}
-
-        {#if activeTab === 'retention'}
-            <RetentionViewer />
-        {/if}
-
-        {#if activeTab === 'loyalty'}
-            <LoyaltyViewer />
-        {/if}
-
-        {#if activeTab === 'punctuality'}
-            <PunctualityViewer />
-        {/if}
-
-        {#if activeTab === 'growth'}
-            <GrowthViewer />
-        {/if}
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Asistencias</h1>
     </div>
 </main>
