@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-
-	const links = [
-		{ href: '/dashboard/qr-generator',  label: 'Generador QR' },
-		{ href: '/dashboard/members',       label: 'Miembros' },
-		{ href: '/dashboard/attendance',    label: 'Asistencias' },
-		{ href: '/dashboard/survey',        label: 'Encuestas' }
-	];
+    import { links } from './links';
 </script>
 
 <aside class="flex flex-col w-full bg-gray-50/90 dark:bg-gray-800/60 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl p-5 print:hidden shadow-2xl transition-all duration-300">

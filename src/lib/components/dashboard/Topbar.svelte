@@ -1,11 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 
-	const links = [
-		{ href: '/dashboard/qr-generator', label: 'QR Generator' },
-		{ href: '/dashboard/members',      label: 'Members'      },
-		{ href: '/dashboard/graphics',     label: 'Graphics'     }
-	];
+    import { links } from './links';
 </script>
 
 <nav class="flex w-full bg-gray-50/90 dark:bg-gray-800/60 backdrop-blur-xl border border-gray-200 dark:border-gray-700 p-2 rounded-2xl overflow-x-auto print:hidden shadow-lg transition-all duration-300">
