@@ -1,13 +1,19 @@
 <script lang="ts">
-	import DarkModeToggle from '$lib/components/page/DarkModeToggle.svelte';
+	import { page } from '$app/state';
+
+    import DarkModeToggle from '$lib/components/page/DarkModeToggle.svelte';
+	import UserDropdown   from '$lib/components/shared/dropdown/UserDropdown.svelte';
+
 
 	interface Props {
-		darkMode	: boolean;
-		onToggle	: ( ) => void;
+		darkMode    : boolean;
+		onToggle    : () => void;
 	}
 
-	let { darkMode, onToggle } : Props = $props( );
+
+	let { darkMode, onToggle } : Props = $props();
 </script>
+
 
 <header class="fixed top-0 w-full h-18 bg-white flex justify-between items-center z-50 border-b border-gray-200 shadow-sm dark:bg-gray-900 dark:border-gray-800 transition-colors pointer-events-none">
 	<div class="h-full flex items-center pointer-events-auto shrink-0 relative">
@@ -33,6 +39,10 @@
 
 	<!-- Selector de idioma y DarkModeToggle a la derecha -->
 	<div class="flex items-center gap-4 pr-4 sm:pr-6 pointer-events-auto shrink-0">
+		{#if page.data.user}
+			<UserDropdown user={ page.data.user } />
+		{/if}
+
 		<DarkModeToggle darkMode={ darkMode } onToggle={ onToggle } />
 	</div>
 </header>
