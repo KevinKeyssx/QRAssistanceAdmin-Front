@@ -45,10 +45,10 @@
                     onclick  = { () => onPageChange( Math.max( 1, currentPage - 1 ) ) }
                     disabled = { currentPage === 1 }
                     class    = "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all
-                               text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
-                               hover:border-lds-navy dark:hover:border-lds-gold hover:text-lds-navy dark:hover:text-lds-gold
-                               disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:text-gray-600
-                               shadow-sm active:scale-95"
+                        text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+                        hover:border-lds-navy dark:hover:border-lds-gold hover:text-lds-navy dark:hover:text-lds-gold
+                        disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:text-gray-600
+                        shadow-sm active:scale-95"
                 >
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
@@ -65,10 +65,10 @@
                         id      = "pagination-page-{ page }"
                         onclick = { () => onPageChange( page ) }
                         class   = "w-9 h-9 rounded-lg text-sm font-bold transition-all shadow-sm active:scale-95
-                                   { currentPage === page
-                                       ? 'bg-lds-navy dark:bg-lds-gold text-white dark:text-gray-900 border border-lds-navy dark:border-lds-gold'
-                                       : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-lds-navy dark:hover:border-lds-gold hover:text-lds-navy dark:hover:text-lds-gold'
-                                   }"
+                            { currentPage === page
+                                ? 'bg-lds-navy dark:bg-lds-gold text-white dark:text-gray-900 border border-lds-navy dark:border-lds-gold'
+                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-lds-navy dark:hover:border-lds-gold hover:text-lds-navy dark:hover:text-lds-gold'
+                            }"
                     >
                         { page }
                     </button>
@@ -80,10 +80,10 @@
                     onclick  = { () => onPageChange( Math.min( totalPages, currentPage + 1 ) ) }
                     disabled = { currentPage === totalPages }
                     class    = "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all
-                               text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
-                               hover:border-lds-navy dark:hover:border-lds-gold hover:text-lds-navy dark:hover:text-lds-gold
-                               disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:text-gray-600
-                               shadow-sm active:scale-95"
+                        text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+                        hover:border-lds-navy dark:hover:border-lds-gold hover:text-lds-navy dark:hover:text-lds-gold
+                        disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:text-gray-600
+                        shadow-sm active:scale-95"
                 >
                     Siguiente
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -102,9 +102,9 @@
                 value       = { pageSize }
                 onchange    = { ( e ) => onPageSizeChange( Number( ( e.target as HTMLSelectElement ).value ) ) }
                 class       = "appearance-none h-full pl-4 pr-9 py-2 rounded-lg text-sm font-semibold outline-none transition-all duration-200
-                               bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300
-                               border border-gray-200 dark:border-gray-700
-                               focus:border-lds-navy dark:focus:border-lds-gold shadow-sm cursor-pointer"
+                    bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300
+                    border border-gray-200 dark:border-gray-700
+                    focus:border-lds-navy dark:focus:border-lds-gold shadow-sm cursor-pointer"
             >
                 {#each pageSizeOptions as size}
                     <option value={ size }>{ size } por página</option>
