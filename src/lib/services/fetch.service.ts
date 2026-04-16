@@ -1,7 +1,8 @@
 import { METHOD } from './http-codes';
 
 
-const BASE_URL = import.meta.env.VITE_API_URL as string;
+const BASE_URL      = import.meta.env.VITE_API_URL as string;
+const FRONTEND_URL  = import.meta.env.VITE_FRONTEND_URL as string;
 
 
 type Connect = {
@@ -9,6 +10,7 @@ type Connect = {
     method?     : METHOD;
     body?       : object;
     isInternal? : boolean;
+    headers?    : Record<string, string>;
 }
 
 
@@ -28,9 +30,10 @@ export default async function connectRequest<T>({
     method = METHOD.GET,
     body,
     endpoint,
-    isInternal = true
+    headers,
+    isInternal = true,
 }: Connect ): Promise<T | ApiError> {
-    const url      = isInternal ? `/api/${endpoint}` : `${BASE_URL}/${endpoint}`;
+    const url      = isInternal ? `${FRONTEND_URL}/api/${endpoint}` : `${BASE_URL}/${endpoint}`;
     const response = await fetch( url, {
         method,
         body    : body ? JSON.stringify( body ) : undefined,
@@ -38,6 +41,7 @@ export default async function connectRequest<T>({
         headers : {
             'Content-Type' : 'application/json',
             Accept         : 'application/json',
+            ...headers
         }
     });
 
