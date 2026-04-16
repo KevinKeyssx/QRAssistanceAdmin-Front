@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
-    import { links } from './links';
+
+    import { links }    from './links';
+    import UserDropdown from '$lib/components/shared/dropdown/UserDropdown.svelte';
 </script>
+
 
 <aside class="flex flex-col w-full bg-gray-50/90 dark:bg-gray-800/60 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl p-5 print:hidden shadow-2xl transition-all duration-300">
 	<div class="mb-8 font-bold text-xl text-gray-900 dark:text-white">
@@ -18,4 +21,10 @@
 			</a>
 		{/each}
 	</nav>
+
+    {#if page.data.user}
+        <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700">
+            <UserDropdown user={ page.data.user } />
+        </div>
+    {/if}
 </aside>
