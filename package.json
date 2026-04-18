@@ -38,6 +38,7 @@
 		"qr-code-styling": "^1.9.2",
 		"svelte-chartjs": "^4.0.1",
 		"svelte-sonner": "^1.1.0",
+		"xlsx": "^0.18.5",
 		"zod": "^4.3.6"
 	}
 }
