@@ -2,6 +2,10 @@
     import { fly } from 'svelte/transition';
 
     import { 
+        SearchIcon, 
+        UserPlus 
+    }                       from 'lucide-svelte';
+    import { 
         createQuery,
         createMutation,
         useQueryClient
@@ -11,15 +15,17 @@
 
     import connectRequest, { 
         isApiError 
-    }                                   from '$lib/services/fetch.service';
+    }                       from '$lib/services/fetch.service';
     import type { 
         Assistance,
         AssistanceResponse 
-    }                                   from '$lib/models/assistance/assistance.model';
-    import { METHOD }                   from '$lib/services/http-codes';
-    import Calendar                     from '$lib/components/shared/Calendar.svelte';
-    import Paginator                    from '$lib/components/shared/Paginator.svelte';
-    import ConfirmDelete                from '$lib/components/shared/ConfirmDelete.svelte';
+    }                       from '$lib/models/assistance/assistance.model';
+    import { METHOD }       from '$lib/services/http-codes';
+    import Calendar         from '$lib/components/shared/Calendar.svelte';
+    import Paginator        from '$lib/components/shared/Paginator.svelte';
+    import AssistanceForm   from '$lib/components/dashboard/assistance/AssistanceForm.svelte';
+    import Dialog           from '$lib/components/shared/Dialog.svelte';
+    import ConfirmDelete    from '$lib/components/shared/ConfirmDelete.svelte';
 
     // ─── Constantes ───────────────────────────────────────────────────────────
     const TYPE_OPTIONS = [
@@ -43,6 +49,8 @@
 
     let isDeleteDialogOpen  = $state( false );
     let assistanceToDelete  = $state<Assistance | null>( null );
+
+    let isRegisterDialogOpen = $state( false );
 
     const queryClient = useQueryClient();
 
@@ -234,7 +242,8 @@
                     onclick     = { handleSearch }
                     class       = "px-5 py-2.5 bg-lds-navy dark:bg-lds-gold text-white dark:text-gray-900 rounded-xl font-bold text-sm shadow-sm hover:opacity-90 transition-all active:scale-95 shrink-0"
                 >
-                    Buscar
+                    <SearchIcon class="w-4 h-4 text-white" />
+                    <!-- Buscar -->
                 </button>
             </div>
         </div>
@@ -270,10 +279,21 @@
             <label for="date-calendar" class="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">
                 Fecha de Asistencia
             </label>
-            <Calendar 
-                bind:value  = { selectedDate }
-                class       = "w-full"
-            />
+
+            <div class="flex gap-2">
+                <Calendar 
+                    bind:value  = { selectedDate }
+                    class       = "flex-1"
+                />
+
+                <button
+                    onclick     = { ( ) => isRegisterDialogOpen = true }
+                    title       = "Registrar Asistencia Manual"
+                    class       = "px-4 py-2.5 bg-lds-navy dark:bg-lds-gold text-white dark:text-gray-900 rounded-xl font-bold text-sm shadow-sm hover:opacity-90 transition-all active:scale-95 shrink-0 flex items-center justify-center"
+                >
+                    <UserPlus class="w-5 h-5" />
+                </button>
+            </div>
         </div>
     </div>
 
@@ -291,7 +311,7 @@
                 </span>
                 asistentes
             </span>
-            
+
             {#if activeMemberQuery || selectedQrType || dateFilter }
                 <div class="w-1.5 h-1.5 rounded-full bg-lds-navy dark:bg-lds-gold opacity-40"></div>
                 <span class="italic text-xs">Filtros activos</span>
@@ -365,17 +385,7 @@
                             </div>
 
                             <!-- Acciones (UI Placeholder) -->
-                            <div class="flex items-center gap-1 sm:gap-2 shrink-0 ml-4 lg:opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                <!-- Botón Editar -->
-                                <button
-                                    title   = "Editar registro"
-                                    class   = "p-2.5 rounded-xl text-gray-400 hover:text-lds-navy dark:hover:text-lds-gold hover:bg-white dark:hover:bg-gray-700 border border-transparent hover:border-gray-100 dark:hover:border-gray-600 transition-all shadow-none hover:shadow-sm active:scale-90"
-                                >
-                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                </button>
-                                
+                            <!-- <div class="flex items-center gap-1 sm:gap-2 shrink-0 ml-4 lg:opacity-0 group-hover:opacity-100 transition-all duration-300"> -->
                                 <!-- Botón Eliminar -->
                                 <button
                                     onclick = { () => openDeleteDialog( item ) }
@@ -386,7 +396,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
                                 </button>
-                            </div>
+                            <!-- </div> -->
                         </div>
                     {/each }
                 </div>
@@ -411,6 +421,19 @@
     itemName    = { assistanceToDelete ? `${ assistanceToDelete.member.name } ${ assistanceToDelete.member.last_name }` : '' }
     itemExtra   = { assistanceToDelete ? `Asistencia a ${ assistanceToDelete.qr.type } del ${ formatDisplayDate( assistanceToDelete.qr.date ) }` : '' }
     isPending   = { deleteMutation.isPending }
-    onClose     = { () => isDeleteDialogOpen = false }
+    onClose     = { ( ) => isDeleteDialogOpen = false }
     onConfirm   = { handleDeleteConfirm }
 />
+
+
+<Dialog
+    open        = { isRegisterDialogOpen }
+    title       = "Registro Manual de Asistencia"
+    description = "Selecciona un miembro y una sesión QR para registrar la asistencia manualmente."
+    onClose     = { ( ) => isRegisterDialogOpen = false }
+>
+    <AssistanceForm 
+        onCancel  = { ( ) => isRegisterDialogOpen = false }
+        onSuccess = { ( ) => isRegisterDialogOpen = false }
+    />
+</Dialog>

@@ -1,26 +1,27 @@
 <script lang="ts">
-    import { fly }      from 'svelte/transition';
-    import { toast }    from 'svelte-sonner';
-
-    import { createQuery }  from '@tanstack/svelte-query';
-
-    import Paginator      from '$lib/components/shared/Paginator.svelte';
-    import EditMember     from './components/MemberForm.svelte';
-    import ConfirmDelete  from '$lib/components/shared/ConfirmDelete.svelte';
+    import { fly } from 'svelte/transition';
 
     import { 
         createMutation, 
-        useQueryClient 
-    }                     from '@tanstack/svelte-query';
+        useQueryClient,
+        createQuery
+    }                   from '@tanstack/svelte-query';
+    import { toast }    from 'svelte-sonner';
+    import { UserPlus } from 'lucide-svelte';
 
     import type { 
         Member, 
         MemberResponse 
-    }                     from '$lib/models/member/member.model';
+    }                       from '$lib/models/member/member.model';
     import connectRequest, { 
         isApiError 
-    }                     from '$lib/services/fetch.service';
-    import { METHOD }     from '$lib/services/http-codes';
+    }                       from '$lib/services/fetch.service';
+    import { METHOD }       from '$lib/services/http-codes';
+    import Paginator        from '$lib/components/shared/Paginator.svelte';
+    import EditMember       from './components/MemberForm.svelte';
+    import AssistanceForm   from '$lib/components/dashboard/assistance/AssistanceForm.svelte';
+    import Dialog           from '$lib/components/shared/Dialog.svelte';
+    import ConfirmDelete    from '$lib/components/shared/ConfirmDelete.svelte';
 
     // ─── Estado ───────────────────────────────────────────────────────────────
     let searchQuery         = $state( '' );
@@ -31,6 +32,9 @@
     let memberToEdit        = $state<Member | null>( null );
     let isDeleteDialogOpen  = $state( false );
     let isEditDialogOpen    = $state( false );
+
+    let isRegisterDialogOpen = $state( false );
+    let selectedMemberId     = $state( '' );
 
     const queryClient = useQueryClient();
 
@@ -63,6 +67,8 @@
             queryClient.invalidateQueries({ queryKey: [ 'members' ] });
             isDeleteDialogOpen = false;
             memberToDelete     = null;
+
+            toast.success( 'Miembro eliminado correctamente' );
         },
         onError: ( error ) => {
             toast.error( String( error ) );
@@ -120,6 +126,11 @@
 
     function handleDeleteConfirm( member: Member ) {
         deleteMutation.mutate( member._id );
+    }
+
+    function openRegister( memberId: string ) {
+        selectedMemberId     = memberId;
+        isRegisterDialogOpen = true;
     }
 
     function handlePageChange( page: number ) {
@@ -281,6 +292,16 @@
                                     </span>
                                 {/if}
 
+                                <!-- Botón de registrar asistencia -->
+                                <button
+                                    id      = "register-member-{ member._id }"
+                                    onclick = { ( ) => openRegister( member.ulid_token ) }
+                                    title   = "Registrar asistencia"
+                                    class   = "p-2 rounded-lg text-gray-400 hover:text-lds-navy dark:hover:text-lds-gold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all active:scale-95"
+                                >
+                                    <UserPlus class="w-4 h-4 sm:w-5 sm:h-5" />
+                                </button>
+
                                 <!-- Botón Editar -->
                                 <button
                                     id      = "edit-member-{ member._id }"
@@ -334,8 +355,23 @@
     onConfirm   = { () => memberToDelete && handleDeleteConfirm( memberToDelete ) }
 />
 
+
 <EditMember
     open    = { isEditDialogOpen }
     member  = { memberToEdit }
-    onClose = { () => isEditDialogOpen = false }
+    onClose = { ( ) => isEditDialogOpen = false }
 />
+
+
+<Dialog
+    open        = { isRegisterDialogOpen }
+    title       = "Registro Manual de Asistencia"
+    description = "Registra la asistencia para este miembro seleccionando una sesión QR."
+    onClose     = { ( ) => isRegisterDialogOpen = false }
+>
+    <AssistanceForm 
+        initialMemberId   = { selectedMemberId }
+        onCancel          = { ( ) => isRegisterDialogOpen = false }
+        onSuccess         = { ( ) => isRegisterDialogOpen = false }
+    />
+</Dialog>

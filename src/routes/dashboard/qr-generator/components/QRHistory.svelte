@@ -5,8 +5,9 @@
         createQuery, 
         createMutation, 
         useQueryClient 
-    }                       from '@tanstack/svelte-query';
-    import { toast }        from 'svelte-sonner';
+    }                   from '@tanstack/svelte-query';
+    import { toast }    from 'svelte-sonner';
+    import { UserPlus } from 'lucide-svelte';
 
     import connectRequest, {
         isApiError
@@ -21,6 +22,7 @@
     import Paginator        from '$lib/components/shared/Paginator.svelte';
     import Dialog           from '$lib/components/shared/Dialog.svelte';
     import ConfirmDelete    from '$lib/components/shared/ConfirmDelete.svelte';
+    import AssistanceForm   from '$lib/components/dashboard/assistance/AssistanceForm.svelte';
 
 
     export interface Props {
@@ -64,6 +66,9 @@
 
     let qrToDelete      = $state<QR | null>( null );
     let isConfirmOpen   = $state( false );
+
+    let isRegisterDialogOpen = $state( false );
+    let selectedQrId         = $state( '' );
 
 
     const queryClient   = useQueryClient();
@@ -194,6 +199,12 @@
     function openDeleteConfirm( qr: QR ) {
         qrToDelete    = qr;
         isConfirmOpen = true;
+    }
+
+
+    function openRegister( sessionId: string ) {
+        selectedQrId         = sessionId;
+        isRegisterDialogOpen = true;
     }
 </script>
 
@@ -422,6 +433,14 @@
 
                                     <!-- Acciones -->
                                     <div class="flex gap-2">
+                                    <!-- Agregar botón de registrar asistencia -->
+                                    <button
+                                        onclick = { ( ) => openRegister( item.session_id ) }
+                                        class   = "p-2 rounded-lg text-gray-400 hover:text-lds-navy dark:hover:text-lds-gold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+                                        title   = "Registrar asistencia"
+                                    >
+                                        <UserPlus class="w-4 h-4" />
+                                    </button>
                                         {#if canManage( item.date )}
                                             <button
                                                 onclick = { () => onEdit( item ) }
@@ -466,16 +485,30 @@
 <!-- Dialog de Confirmación de Eliminación -->
 <Dialog
     open    = { isConfirmOpen }
-    onClose = { () => isConfirmOpen = false }
+    onClose = { ( ) => isConfirmOpen = false }
 >
     {#if qrToDelete}
         <ConfirmDelete
-            onConfirm   = { () => deleteMutation.mutate( qrToDelete!._id ) }
-            onClose     = { () => isConfirmOpen = false }
+            onConfirm   = { ( ) => deleteMutation.mutate( qrToDelete!._id ) }
+            onClose     = { ( ) => isConfirmOpen = false }
             isPending   = { deleteMutation.isPending }
             title       = "¿Eliminar registro del historial?"
             description = { `Estás a punto de eliminar el QR de ${ qrToDelete.type }. Esta acción no se puede deshacer.` }
             open        = { isConfirmOpen }
         />
     {/if}
+</Dialog>
+
+
+<Dialog
+    open        = { isRegisterDialogOpen }
+    title       = "Registro Manual de Asistencia"
+    description = "Registra la asistencia para esta sesión seleccionando un miembro."
+    onClose     = { ( ) => isRegisterDialogOpen = false }
+>
+    <AssistanceForm 
+        initialQrId   = { selectedQrId }
+        onCancel      = { ( ) => isRegisterDialogOpen = false }
+        onSuccess     = { ( ) => isRegisterDialogOpen = false }
+    />
 </Dialog>
