@@ -15,8 +15,9 @@
 		{#each links as link}
 			<a
 				href  = { link.href }
-				class = {`px-4 py-2 rounded-lg transition-colors duration-200 ${ page.url.pathname === link.href ? 'bg-lds-navy text-white dark:bg-lds-gold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }`}
+				class = {`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 ${ page.url.pathname === link.href ? 'bg-lds-navy text-white dark:bg-lds-gold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }`}
 			>
+                <link.icon class="w-5 h-5" />
 				{ link.label }
 			</a>
 		{/each}
