@@ -84,7 +84,7 @@
                 };
             }
 
-            const url = `${ env.PUBLIC_FRONTEND_QR_URL }/${ item.session_id }&class=${ item.type }`;
+            const url = `${ env.PUBLIC_FRONTEND_QR_URL }/${ item.session_id }?class=${ item.type }`;
 
             return {
                 ...item,
