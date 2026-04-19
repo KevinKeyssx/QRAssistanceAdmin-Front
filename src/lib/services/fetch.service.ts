@@ -40,9 +40,11 @@ export default async function connectRequest<T>({
     let url = '';
 
     if (isInternal) {
-        // Si estamos en el navegador, usamos rutas relativas (más seguro)
-        // Si estamos en el servidor (+server.ts), necesitamos la URL completa
-        url = browser ? `/api/${endpoint}` : `/api/${endpoint}`;
+        // En el navegador, /api/ funciona perfecto.
+        // En el servidor (Vercel Function), DEBES usar la URL completa del frontend.
+        url = browser 
+            ? `/api/${endpoint}` 
+            : `${env.PUBLIC_VITE_FRONTEND_URL}/api/${endpoint}`; 
     } else {
         url = `${BASE_URL}/${endpoint}`;
     }
