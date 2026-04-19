@@ -3,7 +3,7 @@ import { METHOD } from './http-codes';
 
 // const BASE_URL = import.meta.env.VITE_API_URL as string;
 import { env } from '$env/dynamic/public';
-
+import { browser } from '$app/environment';
 
 const BASE_URL = env.PUBLIC_VITE_API_URL;
 
@@ -36,7 +36,16 @@ export default async function connectRequest<T>({
     headers,
     isInternal = true,
 }: Connect ): Promise<T | ApiError> {
-    const url      = isInternal ? `/api/${endpoint}` : `${BASE_URL}/${endpoint}`;
+    // const url      = isInternal ? `/api/${endpoint}` : `${BASE_URL}/${endpoint}`;
+    let url = '';
+
+    if (isInternal) {
+        // Si estamos en el navegador, usamos rutas relativas (más seguro)
+        // Si estamos en el servidor (+server.ts), necesitamos la URL completa
+        url = browser ? `/api/${endpoint}` : `/api/${endpoint}`;
+    } else {
+        url = `${BASE_URL}/${endpoint}`;
+    }
     console.log('🚀 ~************************************************* connectRequest ~ url:', url)
     const response = await fetch( url, {
         method,
