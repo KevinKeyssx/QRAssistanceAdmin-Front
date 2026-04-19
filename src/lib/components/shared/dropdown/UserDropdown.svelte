@@ -1,8 +1,14 @@
 <script lang="ts">
     import { DropdownMenu } from "bits-ui";
 
+    import {
+        isDark,
+        toggleDarkMode
+    }                       from "$lib/stores/themeStore";
     import { authClient }   from "$lib/auth/auth-client";
     import { goto }         from "$app/navigation";
+    import { clearSession } from "$lib/stores/sessionStore";
+    import DarkModeToggle   from "$lib/components/page/DarkModeToggle.svelte";
 
 
     interface Props {
@@ -14,6 +20,7 @@
 
 
     async function logout() {
+        clearSession();
         await authClient.signOut();
         goto( "/" );
     }
@@ -42,7 +49,6 @@
 
 
     <DropdownMenu.Content class="w-64 mt-2 p-1.5 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl z-50">
-
         <div class="px-3 py-2 flex flex-col gap-1">
             <div class="flex items-center gap-2">
                 <div class="w-10 h-10 rounded-lg bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-lds-navy dark:text-lds-gold text-sm font-black border border-gray-100 dark:border-gray-700">
@@ -63,6 +69,16 @@
                     Activo
                 </span>
             </div>
+
+            <div class="sm:hidden flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 p-2 rounded-xl border border-gray-100 dark:border-gray-700/50">
+                <span class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Tema</span>
+
+                <DarkModeToggle 
+                    darkMode    = { $isDark } 
+                    onToggle    = { toggleDarkMode } 
+                    className   = "w-8 h-8"
+                />
+            </div>
         </div>
 
         <DropdownMenu.Separator class="h-px my-2 bg-gray-100 dark:bg-gray-700" />
@@ -76,6 +92,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
             </div>
+
             Cerrar Sesión
         </DropdownMenu.Item>
     </DropdownMenu.Content>
