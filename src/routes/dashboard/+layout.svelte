@@ -1,8 +1,15 @@
 <script lang="ts">
-	import Sidebar from '$lib/components/dashboard/Sidebar.svelte';
-	import Topbar  from '$lib/components/dashboard/Topbar.svelte';
+	import { onMount } from 'svelte';
 
-	let { children } = $props();
+    import Sidebar              from '$lib/components/dashboard/Sidebar.svelte';
+	import Topbar               from '$lib/components/dashboard/Topbar.svelte';
+	import { activateSession }  from '$lib/stores/sessionStore';
+
+
+    let { children } = $props();
+
+
+	onMount( ( ) => activateSession( ) );
 </script>
 
 <div class="w-full flex justify-center items-start flex-1 px-4 py-8 md:px-8 md:py-12">
