@@ -23,6 +23,9 @@
     import Dialog           from '$lib/components/shared/Dialog.svelte';
     import ConfirmDelete    from '$lib/components/shared/ConfirmDelete.svelte';
     import AssistanceForm   from '$lib/components/dashboard/assistance/AssistanceForm.svelte';
+    import YearSelect       from '$lib/components/shared/filter/YearSelect.svelte';
+    import ClasesSelect     from '$lib/components/shared/filter/ClasesSelect.svelte';
+    import MonthSelect      from '$lib/components/shared/filter/MonthSelect.svelte';
 
 
     export interface Props {
@@ -40,26 +43,27 @@
 
     // ─── Estado ───────────────────────────────────────────────────────────────
     const currentYear   = new Date().getFullYear();
-    const yearOptions   = Array.from( { length: 5 }, ( _, i ) => currentYear - i );
-    const monthOptions  = [
-        { value: 0,  label: 'Enero' },
-        { value: 1,  label: 'Febrero' },
-        { value: 2,  label: 'Marzo' },
-        { value: 3,  label: 'Abril' },
-        { value: 4,  label: 'Mayo' },
-        { value: 5,  label: 'Junio' },
-        { value: 6,  label: 'Julio' },
-        { value: 7,  label: 'Agosto' },
-        { value: 8,  label: 'Septiembre' },
-        { value: 9,  label: 'Octubre' },
-        { value: 10, label: 'Noviembre' },
-        { value: 11, label: 'Diciembre' },
-    ];
 
 
     let selectedYear    = $state( currentYear );
     let selectedType    = $state( '' );
     let selectedMonth   = $state<number | ''>( '' );
+
+    // Para los componentes Select que trabajan con strings
+    let yearStr         = $state( currentYear.toString() );
+    let monthStr        = $state( '' );
+
+    // Sincronización
+    $effect( () => {
+        selectedYear = Number( yearStr );
+        currentPage = 1;
+    });
+
+    $effect( () => {
+        selectedMonth = monthStr === '' ? '' : Number( monthStr );
+        currentPage = 1;
+    });
+
     let currentPage     = $state( 1 );
     let pageSize        = $state( 10 );
 
@@ -99,7 +103,8 @@
                 isInternal  : true
             });
 
-            if ( isApiError( result ) ) throw result;
+            if ( isApiError( result )) throw result;
+
             return result;
         },
         onSuccess: () => {
@@ -170,28 +175,9 @@
     }
 
 
-    function handleYearChange( e: Event ): void {
-        selectedYear = Number( ( e.target as HTMLSelectElement ).value );
-        currentPage  = 1;
-    }
-
-
-    function handleTypeChange( e: Event ): void {
-        selectedType = ( e.target as HTMLSelectElement ).value;
-        currentPage  = 1;
-    }
-
-
-    function handleMonthChange( e: Event ): void {
-        const val   = ( e.target as HTMLSelectElement ).value;
-        selectedMonth   = val === '' ? '' : Number( val );
-        currentPage     = 1;
-    }
-
-
     function clearFilters(): void {
         selectedType    = '';
-        selectedMonth   = '';
+        monthStr        = '';
         currentPage     = 1;
     }
 
@@ -212,104 +198,20 @@
 <div in:fly={{ y: 20, duration: 400 }} class="w-full space-y-6 pb-12">
     <!-- Barra de filtros -->
     <div class="flex flex-col gap-3">
-        <div class="flex flex-wrap items-center gap-3">
+        <div class="flex flex-wrap items-end gap-4 overflow-x-auto pb-2">
+            <YearSelect bind:value={ yearStr } class="w-28 shrink-0" />
 
-            <!-- Año -->
-            <div class="flex items-center gap-2">
-                <label for="qr-history-year" class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide shrink-0">
-                    Año
-                </label>
+            <div class="h-10 w-px bg-gray-200 dark:bg-gray-700 hidden sm:block shrink-0"></div>
 
-                <div class="relative">
-                    <select
-                        id       = "qr-history-year"
-                        value    = { selectedYear }
-                        onchange = { handleYearChange }
-                        class    = "appearance-none pl-3 pr-8 py-2 rounded-lg text-sm font-semibold outline-none transition-all duration-200
-                                    bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                                    border border-gray-200 dark:border-gray-700
-                                    focus:border-lds-navy dark:focus:border-lds-gold shadow-sm cursor-pointer"
-                    >
-                        {#each yearOptions as year}
-                            <option value={ year }>{ year }</option>
-                        {/each}
-                    </select>
+            <ClasesSelect 
+                bind:value      = { selectedType } 
+                onValueChange   = { () => currentPage = 1 } 
+                class           = "w-48 shrink-0"
+            />
 
-                    <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
+            <div class="h-10 w-px bg-gray-200 dark:bg-gray-700 hidden sm:block shrink-0"></div>
 
-            <!-- Separador -->
-            <div class="h-6 w-px bg-gray-200 dark:bg-gray-700 hidden sm:block"></div>
-
-            <!-- Tipo de QR -->
-            <div class="flex items-center gap-2">
-                <label for="qr-history-type" class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide shrink-0">
-                    Clase
-                </label>
-
-                <div class="relative">
-                    <select
-                        id       = "qr-history-type"
-                        value    = { selectedType }
-                        onchange = { handleTypeChange }
-                        class    = "appearance-none pl-3 pr-8 py-2 rounded-lg text-sm font-semibold outline-none transition-all duration-200
-                                    bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                                    border border-gray-200 dark:border-gray-700
-                                    focus:border-lds-navy dark:focus:border-lds-gold shadow-sm cursor-pointer
-                                    { selectedType ? 'border-lds-navy dark:border-lds-gold text-lds-navy dark:text-lds-gold' : '' }"
-                    >
-                        <option value="">Todas</option>
-                        {#each LDS_CLASSES as cls}
-                            <option value={ cls.slug }>{ cls.label }</option>
-                        {/each}
-                    </select>
-
-                    <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Separador -->
-            <div class="h-6 w-px bg-gray-200 dark:bg-gray-700 hidden sm:block"></div>
-
-            <!-- Mes -->
-            <div class="flex items-center gap-2">
-                <label for="qr-history-month" class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide shrink-0">
-                    Mes
-                </label>
-
-                <div class="relative">
-                    <select
-                        id       = "qr-history-month"
-                        value    = { selectedMonth }
-                        onchange = { handleMonthChange }
-                        class    = "appearance-none pl-3 pr-8 py-2 rounded-lg text-sm font-semibold outline-none transition-all duration-200
-                                    bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                                    border border-gray-200 dark:border-gray-700
-                                    focus:border-lds-navy dark:focus:border-lds-gold shadow-sm cursor-pointer
-                                    { selectedMonth !== '' ? 'border-lds-navy dark:border-lds-gold text-lds-navy dark:text-lds-gold' : '' }"
-                    >
-                        <option value="">Todos</option>
-                        {#each monthOptions as m}
-                            <option value={ m.value }>{ m.label }</option>
-                        {/each}
-                    </select>
-
-                    <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
+            <MonthSelect bind:value={ monthStr } class="w-40 shrink-0" />
 
             <!-- Limpiar filtros -->
             {#if hasActiveFilters}
@@ -422,7 +324,7 @@
                                 <!-- Badge + Asistentes + Acciones -->
                                 <div class="flex items-center gap-6 shrink-0 ml-4">
                                     <div class="flex flex-col items-end gap-1.5">
-                                        <span class="bg-blue-50 text-blue-700 dark:bg-lds-gold/20 dark:text-lds-gold text-xs px-3 py-1.5 rounded-full font-bold tracking-wide">
+                                        <span class="bg-blue-50 text-lds-navy dark:bg-lds-gold/20 dark:text-lds-gold text-xs px-3 py-1.5 rounded-full font-bold tracking-wide">
                                             Generado
                                         </span>
 
