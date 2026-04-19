@@ -1,8 +1,9 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 
 import { auth }         from '$lib/auth/auth';
-import connectRequest   from '$lib/services/fetch.service';
+// import connectRequest   from '$lib/services/fetch.service';
 import { METHOD }       from '$lib/services/http-codes';
+import { ENV } from '$lib/utils/env.server';
 
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -20,19 +21,32 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	if ( isDashboard && !authSession ) throw redirect( 302, '/' );
 
-	// if ( isDashboard && user ) {
-	// 	try {
-	// 		await connectRequest( {
-	// 			endpoint	: `validate-user?email=${ encodeURIComponent( user.email )}`,
-	// 			method      : METHOD.GET,
-	// 			isInternal	: true,
-	// 		});
-	// 	} catch ( error ) {
-	// 		await auth.api.signOut({ headers: event.request.headers });
+	if ( isDashboard && user ) {
+		try {
+			// await connectRequest( {
+			// 	endpoint	: `validate-user?email=${ encodeURIComponent( user.email )}`,
+			// 	method      : METHOD.GET,
+			// 	isInternal	: true,
+			// });
 
-	// 		throw redirect( 302, '/?error=unauthorized' );
-	// 	}
-	// }
+            const response = await fetch( `${ENV.FRONTEND_URL}/api/validate-user?email=${ encodeURIComponent( user.email )}`, {
+                    method: METHOD.GET,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                }
+            );
+
+            if ( !response.ok ) {
+                throw redirect( 302, '/?error=unauthorized' );
+            }
+		} catch ( error ) {
+			await auth.api.signOut({ headers: event.request.headers });
+
+			throw redirect( 302, '/?error=unauthorized' );
+		}
+	}
 
 	return resolve( event );
 };

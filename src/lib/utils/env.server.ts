@@ -5,7 +5,8 @@ import {
     GOOGLE_CLIENT_SECRET,
     BETTER_AUTH_SECRET,
     BETTER_AUTH_URL,
-    INTERNAL_SECRET_KEY
+    INTERNAL_SECRET_KEY,
+    FRONTEND_URL
 } from '$env/static/private';
 
 
@@ -15,6 +16,7 @@ const envSchema = z.object({
     BETTER_AUTH_SECRET      : z.string().min(1),
     BETTER_AUTH_URL         : z.url(),
     INTERNAL_SECRET_KEY     : z.string().min(1),
+    FRONTEND_URL            : z.url().min(1),
 });
 
 
@@ -24,6 +26,7 @@ const parsedEnv = envSchema.safeParse({
     BETTER_AUTH_SECRET,
     BETTER_AUTH_URL,
     INTERNAL_SECRET_KEY,
+    FRONTEND_URL,
 });
 
 
@@ -47,4 +50,6 @@ export const ENV = {
     },
 
     INTERNAL_SECRET_KEY: parsedEnv.data.INTERNAL_SECRET_KEY,
+
+    FRONTEND_URL: parsedEnv.data.FRONTEND_URL,
 };
