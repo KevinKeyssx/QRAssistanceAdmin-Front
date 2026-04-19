@@ -376,9 +376,9 @@
 				<p class="text-sm text-gray-500 mt-2">¿Quieres ver la retención o fidelidad del trimestre?</p>
 			</div>
 
-<a 
+            <a 
 				href	= "/dashboard/analytics"
-				class	= "flex items-center justify-center gap-2 w-full py-4 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold text-sm transition-all hover:opacity-90 active:scale-95"
+				class	= "flex items-center justify-center gap-2 w-full py-4 rounded-2xl bg-lds-navy dark:bg-lds-gold text-white dark:text-gray-900 font-bold text-sm transition-all hover:opacity-90 active:scale-95"
 			>
 				Ver Analíticas Detalladas
 			</a>
