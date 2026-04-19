@@ -3,6 +3,7 @@
 
     import DarkModeToggle from '$lib/components/page/DarkModeToggle.svelte';
 	import UserDropdown   from '$lib/components/shared/dropdown/UserDropdown.svelte';
+	import { hasSession } from '$lib/stores/sessionStore';
 
 
 	interface Props {
@@ -33,16 +34,20 @@
 
         <div class="ml-9 sm:ml-12 flex flex-col justify-center relative z-50">
             <span class="uppercase text-gray-800 dark:text-gray-300 font-medium tracking-wider" style="font-size: 10px; line-height: 1.2;">Barrio</span>
-            <span class="font-serif uppercase text-lds-navy dark:text-lds-gold font-semibold tracking-wider" style="font-size: 21px; line-height: 1.1;">La Cisterna</span>
+            <span class="font-serif uppercase text-lds-navy dark:text-lds-gold font-semibold tracking-widest text-md sm:text-xl">La Cisterna</span>
         </div>
 	</div>
 
 	<!-- Selector de idioma y DarkModeToggle a la derecha -->
 	<div class="flex items-center gap-4 pr-4 sm:pr-6 pointer-events-auto shrink-0">
-		{#if page.data.user}
+		{#if $hasSession}
 			<UserDropdown user={ page.data.user } />
 		{/if}
 
-		<DarkModeToggle darkMode={ darkMode } onToggle={ onToggle } />
+		<DarkModeToggle
+            darkMode    = { darkMode }
+            onToggle    = { onToggle }
+            className   = "hidden sm:flex"
+        />
 	</div>
 </header>
