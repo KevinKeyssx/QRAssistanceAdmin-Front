@@ -26,17 +26,7 @@
     import AssistanceForm   from '$lib/components/dashboard/assistance/AssistanceForm.svelte';
     import Dialog           from '$lib/components/shared/Dialog.svelte';
     import ConfirmDelete    from '$lib/components/shared/ConfirmDelete.svelte';
-
-    // ─── Constantes ───────────────────────────────────────────────────────────
-    const TYPE_OPTIONS = [
-        { label : 'Todas las clases',  slug : '' },
-        { label : 'Evento',            slug : 'event' },
-        { label : 'Show',              slug : 'show' },
-        { label : 'Noche de hogar',    slug : 'family-home' },
-        { label : 'Reunión',           slug : 'meeting' },
-        { label : 'Servicio',          slug : 'service' },
-        { label : 'Otro',              slug : 'other' }
-    ];
+    import ClasesSelect     from '$lib/components/shared/filter/ClasesSelect.svelte';
 
     // ─── Estado ───────────────────────────────────────────────────────────────
     let memberSearch        = $state( '' );
@@ -190,7 +180,7 @@
 <main class="flex flex-col gap-6 w-full max-w-6xl mx-auto align-top pb-10">
     <!-- Encabezado -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Asistencias</h1>
+        <h1 class="text-3xl font-bold text-lds-navy dark:text-lds-gold tracking-tight">Asistencias</h1>
 
         <div class="flex items-center gap-3">
             {#if assistancesQuery.data }
@@ -248,30 +238,12 @@
             </div>
         </div>
 
-        <!-- Selector de Tipo de Clase -->
-        <div class="md:col-span-3 flex flex-col gap-2">
-            <label for="qr-type-select" class="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">
-                Tipo de Clase
-            </label>
-            <div class="relative">
-                <select
-                    id          = "qr-type-select"
-                    bind:value={ selectedQrType }
-                    class       = "w-full appearance-none pl-4 pr-10 py-2.5 rounded-xl text-sm font-medium outline-none transition-all duration-200
-                        bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white
-                        border border-gray-200 dark:border-gray-700
-                        focus:border-lds-navy dark:focus:border-lds-gold shadow-sm cursor-pointer"
-                >
-                    {#each TYPE_OPTIONS as option }
-                        <option value={ option.slug }>{ option.label }</option>
-                    {/each }
-                </select>
-                <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-400">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </div>
-            </div>
+        <div class="md:col-span-3">
+            <ClasesSelect 
+                label         = "Tipo de Clase"
+                bind:value     = { selectedQrType } 
+                class         = "w-full"
+            />
         </div>
 
         <!-- Filtro por Fecha (Calendar) -->
