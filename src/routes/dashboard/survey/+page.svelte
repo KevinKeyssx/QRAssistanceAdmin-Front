@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { createQuery } from '@tanstack/svelte-query';
-	import { Bar } from 'svelte-chartjs';
 	import {
 		Chart as ChartJS,
 		Title,
@@ -9,11 +7,20 @@
 		BarElement,
 		CategoryScale,
 		LinearScale
-	} from 'chart.js';
-	import connectRequest, { isApiError } from '$lib/services/fetch.service';
-	import { METHOD } from '$lib/services/http-codes';
+	}                       from 'chart.js';
+	import { Bar }          from 'svelte-chartjs';
+	import { createQuery }  from '@tanstack/svelte-query';
+    import { toast }        from 'svelte-sonner';
 
-	import { LDS_CLASSES } from '$lib/utils/classes';
+    import connectRequest, {
+        isApiError
+    }                           from '$lib/services/fetch.service';
+	import { getThemeColor }    from '$lib/utils/theme';
+	import { METHOD }           from '$lib/services/http-codes';
+	import { isDark }           from '$lib/stores/themeStore';
+	import YearSelect           from '$lib/components/shared/filter/YearSelect.svelte';
+	import MonthSelect          from '$lib/components/shared/filter/MonthSelect.svelte';
+	import ClasesSelect         from '$lib/components/shared/filter/ClasesSelect.svelte';
 
 
 	ChartJS.register(
@@ -30,18 +37,17 @@
 	let month     = $state( '' );
 	let classType = $state( '' );
 
-	const months = [
-		{ val: '',   label: 'Todos los meses' },
-		{ val: '1',  label: 'Enero' }, { val: '2',  label: 'Febrero' }, { val: '3',  label: 'Marzo' },
-		{ val: '4',  label: 'Abril' }, { val: '5',  label: 'Mayo' }, { val: '6',  label: 'Junio' },
-		{ val: '7',  label: 'Julio' }, { val: '8',  label: 'Agosto' }, { val: '9',  label: 'Septiembre' },
-		{ val: '10', label: 'Octubre' }, { val: '11', label: 'Noviembre' }, { val: '12', label: 'Diciembre' }
-	];
 
 	const statsQuery = createQuery( () => {
 		const params = new URLSearchParams({ year });
-		if ( month )     params.append( 'month',      month );
-		if ( classType ) params.append( 'class_type', classType );
+
+        if ( month ) {
+			// Ajustamos de 0-indexed a 1-indexed para el API
+			const monthApi = ( Number( month ) + 1 ).toString();
+			params.append( 'month', monthApi );
+		}
+
+        if ( classType ) params.append( 'class_type', classType );
 
 		return {
 			queryKey : [ 'survey-stats', year, month, classType ],
@@ -52,7 +58,9 @@
 					isInternal	: true
 				});
 
-				if ( isApiError( result ) ) throw result;
+				if ( isApiError( result )) {
+                    toast.error( 'Error al obtener las métricas de encuestas' );
+                };
 
 				return result;
 			}
@@ -61,7 +69,7 @@
 
 	const chartData = $derived.by( () => {
 		const apiResponse = statsQuery.data;
-		
+
 		if ( !apiResponse ) {
 			return {
 				labels		: [],
@@ -79,12 +87,14 @@
 				{
 					label			: 'SÍ',
 					data			: yesData,
-					backgroundColor	: '#22c55e'
+					backgroundColor	: getThemeColor( $isDark ),
+					borderRadius    : 4
 				},
 				{
 					label			: 'NO',
 					data			: noData,
-					backgroundColor	: '#ef4444'
+					backgroundColor	: '#64748b', // Slate 500 para el NO (Soberbio)
+					borderRadius    : 4
 				}
 			]
 		};
@@ -123,50 +133,24 @@
 <main class="flex flex-col gap-6 w-full max-w-6xl mx-auto align-top">
 	<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
 		<div>
-			<h1 class="text-3xl font-bold text-gray-900 dark:text-white">Encuestas</h1>
-			<p class="text-sm text-gray-500 mt-1">Métricas de respuestas obtenidas.</p>
+			<h1 class="text-3xl font-bold text-lds-navy dark:text-lds-gold">Encuestas</h1>
+
+            <p class="text-sm text-gray-500 mt-1">Métricas de respuestas obtenidas.</p>
 		</div>
 
-		<div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-			<div class="flex flex-col gap-1 w-full sm:w-auto">
-				<label for="yearSelect" class="text-xs font-semibold text-gray-600 dark:text-gray-400">Año *</label>
-				<select 
-					id = "yearSelect"
-					class = "border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-lds-gold outline-none min-w-[100px]"
-					bind:value={ year }
-				>
-					<option value="2026">2026</option>
-					<option value="2025">2025</option>
-					<option value="2024">2024</option>
-				</select>
-			</div>
+		<div class="flex flex-wrap items-end gap-3 w-full sm:w-auto">
+			<YearSelect bind:value={ year } class="w-28" />
 
-			<div class="flex flex-col gap-1 w-full sm:w-auto">
-				<label for="monthSelect" class="text-xs font-semibold text-gray-600 dark:text-gray-400">Mes (Drill-down)</label>
-				<select 
-					id = "monthSelect"
-					class = "border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-lds-gold outline-none min-w-[140px]"
-					bind:value={ month }
-				>
-					{#each months as m}
-						<option value={ m.val }>{ m.label }</option>
-					{/each}
-				</select>
-			</div>
+			<MonthSelect 
+				bind:value  = { month } 
+				class       = "w-44" 
+			/>
 
-			<div class="flex flex-col gap-1 w-full sm:w-auto">
-				<label for="typeSelect" class="text-xs font-semibold text-gray-600 dark:text-gray-400">Organización</label>
-				<select 
-					id = "typeSelect"
-					class = "border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-lds-gold outline-none min-w-[160px]"
-					bind:value={ classType }
-				>
-					<option value="">Todas las clases</option>
-					{#each LDS_CLASSES as cls}
-						<option value={ cls.slug }>{ cls.label }</option>
-					{/each}
-				</select>
-			</div>
+			<ClasesSelect 
+				bind:value  = { classType }
+				label       = "Organización"
+				class       = "w-48"
+			/>
 		</div>
 	</div>
 
