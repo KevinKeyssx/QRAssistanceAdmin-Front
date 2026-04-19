@@ -1,13 +1,13 @@
 import { METHOD } from './http-codes';
 
 
-// const BASE_URL      = import.meta.env.VITE_API_URL as string;
+const BASE_URL      = import.meta.env.VITE_API_URL as string;
 // const FRONTEND_URL  = import.meta.env.VITE_FRONTEND_URL as string;
 
-import { env } from '$env/dynamic/public'; // O '$env/static/public' si prefieres
+// import { env } from '$env/dynamic/public'; // O '$env/static/public' si prefieres
 
-const BASE_URL = env.PUBLIC_VITE_API_URL;
-const FRONTEND_URL = env.PUBLIC_VITE_FRONTEND_URL;
+// const BASE_URL = env.PUBLIC_VITE_API_URL;
+// const FRONTEND_URL = env.PUBLIC_VITE_FRONTEND_URL;
 
 
 type Connect = {
@@ -38,7 +38,8 @@ export default async function connectRequest<T>({
     headers,
     isInternal = true,
 }: Connect ): Promise<T | ApiError> {
-    const url      = isInternal ? `${FRONTEND_URL}/api/${endpoint}` : `${BASE_URL}/${endpoint}`;
+    // const url      = isInternal ? `${FRONTEND_URL}/api/${endpoint}` : `${BASE_URL}/${endpoint}`;
+    const url      = isInternal ? `/api/${endpoint}` : `${BASE_URL}/${endpoint}`;
     const response = await fetch( url, {
         method,
         body    : body ? JSON.stringify( body ) : undefined,
