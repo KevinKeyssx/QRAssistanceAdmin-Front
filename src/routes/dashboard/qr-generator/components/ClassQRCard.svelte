@@ -1,16 +1,18 @@
 <script lang="ts">
-	import { onMount }  from 'svelte';
-	import { browser }  from '$app/environment';
+	import { onMount } from 'svelte';
 
-    import QRCodeStyling, { type DrawType }    from 'qr-code-styling';
-	import { jsPDF }        from 'jspdf';
-    import { toast }        from 'svelte-sonner'
-
+    import QRCodeStyling, {
+        type DrawType
+    }                               from 'qr-code-styling';
+	import { jsPDF }                from 'jspdf';
+    import { toast }                from 'svelte-sonner'
+    import { FileText, Printer }    from 'lucide-svelte';
 
     import type { LDSClass }    from '$lib/types';
     import { isDark }           from '$lib/stores/themeStore';
     import Dialog               from '$lib/components/shared/Dialog.svelte';
     import ConfirmDelete        from '$lib/components/shared/ConfirmDelete.svelte';
+    import { getThemeColor }    from '$lib/utils/theme';
 
 
 	export interface Props {
@@ -109,15 +111,6 @@
     });
 
 
-    function getThemeColor() {
-		if ( !browser ) return '#007da5';
-
-        const isDark = document.documentElement.classList.contains( 'dark' );
-
-        return isDark ? '#c9a227' : '#007da5';
-	}
-
-
     async function handlePrint() {
 		if ( disabled ) return;
 
@@ -177,8 +170,10 @@
         // Convertir Blob a Base64 asíncronamente para jsPDF
         const imgData = await new Promise<string>( ( resolve ) => {
             const reader = new FileReader();
+
             reader.onloadend = () => resolve( reader.result as string );
-            reader.readAsDataURL( blob );
+
+            reader.readAsDataURL( blob as Blob );
         });
 
 		const pdf = new jsPDF({
@@ -223,7 +218,7 @@
 
 <div
     bind:this = { cardRef }
-    class     = "group relative flex flex-col bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 dark:hover:shadow-black/20 transition-all duration-500 overflow-hidden { disabled ? 'opacity-50 grayscale pointer-events-none' : '' }"
+    class     = "group relative flex flex-col bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-xl hover:shadow-gray-200 dark:hover:shadow-black/50 transition-all duration-500 overflow-hidden { disabled ? 'opacity-50 grayscale pointer-events-none' : '' }"
 >
     <!-- Acciones de Gestión (Top Right) -->
     {#if canManage && ( onEdit || onDelete )}
@@ -257,7 +252,7 @@
     <div class="p-6 flex flex-col items-center gap-5 w-full">
         <!-- Encabezado de la Tarjeta -->
         <div class="flex flex-col items-center gap-2">
-            <div class="w-12 h-12 rounded-xl bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-lds-navy dark:text-lds-gold shadow-inner transition-transform duration-500 group-hover:scale-110">
+            <!-- <div class="w-12 h-12 rounded-xl bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-lds-navy dark:text-lds-gold shadow-inner transition-transform duration-500 group-hover:scale-110">
                 {#if appClass.icon}
                     {@const Icon = appClass.icon}
                     <Icon class="w-6 h-6" />
@@ -266,7 +261,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                 {/if}
-            </div>
+            </div> -->
 
             <h3 class="font-bold text-xl text-gray-900 dark:text-gray-100 text-center tracking-tight leading-tight px-4">
                 { appClass.label }
@@ -281,7 +276,7 @@
         </div>
 
         <!-- Contenedor del QR con Efecto de Profundidad -->
-        <div class="relative w-max p-4 bg-white rounded-xl shadow-inner border border-gray-100 transition-all duration-500 group-hover:shadow-lg group-hover:shadow-gray-200/50" bind:this={ qrRef }>
+        <div class="relative w-max p-4 bg-white rounded-xl shadow-inner border border-gray-100 transition-all duration-500 " bind:this={ qrRef }>
             <!-- Glow sutil de fondo -->
             <div class="absolute inset-0 bg-lds-navy/5 dark:bg-lds-gold/5 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10"></div>
         </div>
@@ -293,21 +288,19 @@
                 { disabled }
                 class   = "flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gray-50 text-gray-700 dark:bg-gray-700/50 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-200/50 dark:border-gray-600/50 transition-all font-bold text-sm shadow-sm active:scale-95 disabled:opacity-50"
             >
-                <!-- <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.844l.827-4.708L12 7.156l4.453 1.98.827 4.708M12 21V7.156M12 21a9.003 9.003 0 008.384-5.69M12 21a9.003 9.003 0 01-8.384-5.69M12 7.156c1.116 0 2.11-.453 2.828-1.185A3.987 3.987 0 0015.844 3h-7.688c-.372 0-.742.062-1.096.185a3.987 3.987 0 00-2.828 1.185 3.987 3.987 0 00-1.185 2.828l.827 4.708" />
-                </svg> -->
-                <span>Imprimir</span>
+                <Printer class="sm:hidden w-4 h-4" />
+
+                <span class="hidden sm:flex">Imprimir</span>
             </button>
 
             <button
                 onclick = { handleDownloadPDF }
                 { disabled }
-                class   = "flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-lds-navy text-white dark:bg-lds-gold dark:text-gray-900 shadow-md shadow-lds-navy/20 dark:shadow-lds-gold/20 hover:opacity-90 transition-all font-bold text-sm active:scale-95 disabled:opacity-50"
+                class   = "flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-lds-navy dark:bg-lds-gold  shadow-md shadow-lds-navy/20 dark:shadow-lds-gold/20 hover:opacity-90 transition-all font-bold text-sm active:scale-95 disabled:opacity-50 text-white"
             >
-                <!-- <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg> -->
-                <span>PDF</span>
+                <FileText class="sm:hidden w-4 h-4" />
+
+                <span class="hidden sm:flex">PDF</span>
             </button>
         </div>
     </div>
