@@ -7,7 +7,7 @@
 
 
 <aside class="flex flex-col w-full bg-gray-50/90 dark:bg-gray-800/60 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl p-5 print:hidden shadow-2xl transition-all duration-300">
-	<div class="mb-8 font-bold text-xl text-gray-900 dark:text-white">
+	<div class="mb-8 font-bold text-xl text-lds-navy dark:text-lds-gold">
 		Panel de control
 	</div>
 
