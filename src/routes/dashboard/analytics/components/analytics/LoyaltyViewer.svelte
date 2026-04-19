@@ -1,23 +1,41 @@
 <script lang="ts">
-    import { createQuery }    from '@tanstack/svelte-query';
-    import { Bar }            from 'svelte-chartjs';
     import {
         Chart as ChartJS,
-        Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale
-    }                         from 'chart.js';
-
-    ChartJS.register( Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale );
+        Title,
+        Tooltip,
+        Legend,
+        BarElement,
+        CategoryScale,
+        LinearScale
+    }                       from 'chart.js';
+    import { Bar }          from 'svelte-chartjs';
+    import { createQuery }  from '@tanstack/svelte-query';
 
     import connectRequest, {
         isApiError
-    }                         from '$lib/services/fetch.service';
-    import { METHOD }         from '$lib/services/http-codes';
+    }                       from '$lib/services/fetch.service';
+    import { METHOD }       from '$lib/services/http-codes';
     import type { 
         LoyaltyStatusDTO 
-    }                         from '$lib/models/analytics/analytic.model';
-    import { ENDPOINT }       from '$lib/utils/consts/endpoints';
+    }                       from '$lib/models/analytics/analytic.model';
+    import {
+        getThemeColor,
+        getThemeColorRGBA
+    }                       from '$lib/utils/theme';
+    import { ENDPOINT }     from '$lib/utils/consts/endpoints';
+    import { isDark }       from '$lib/stores/themeStore';
 
-    
+
+    ChartJS.register(
+        Title,
+        Tooltip,
+        Legend,
+        BarElement,
+        CategoryScale,
+        LinearScale
+    );
+
+
     const loyaltyQuery = createQuery( () => ({
         queryKey    : [ 'analytics', 'loyalty' ],
         queryFn     : async (): Promise<LoyaltyStatusDTO[]> => {
@@ -45,9 +63,10 @@
         };
 
         const backgroundColors = loyaltyQuery.data.map( d => {
-            if ( d.status.toLowerCase().includes( 'active' ) ) return '#caa861'; // lds gold
-            if ( d.status.toLowerCase().includes( 'risk' ) ) return '#8b6914'; // darker gold
-            return '#1a2a40'; // lds navy
+            const status = d.status.toLowerCase();
+            if ( status.includes( 'active' ) ) return getThemeColor( $isDark );
+            if ( status.includes( 'risk' ) )   return getThemeColorRGBA( 0.6, $isDark );
+            return '#64748b'; // Slate 500 para inactivos (Soberbio)
         });
 
         return {
