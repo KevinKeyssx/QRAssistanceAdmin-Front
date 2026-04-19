@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 
-    import { links }    from './links';
-    import UserDropdown from '$lib/components/shared/dropdown/UserDropdown.svelte';
+    import { links } from './links';
 </script>
 
 
@@ -12,17 +11,12 @@
 			<li>
 				<a
 					href  = { link.href }
-					class = {`whitespace-nowrap px-3 py-1.5 rounded-md text-sm transition-colors duration-200 ${ page.url.pathname === link.href ? 'bg-lds-navy text-white dark:bg-lds-gold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }`}
+					class = {`flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 rounded-md text-sm transition-colors duration-200 ${ page.url.pathname === link.href ? 'bg-lds-navy text-white dark:bg-lds-gold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }`}
 				>
+                    <svelte:component this={ link.icon } class="w-4 h-4" />
 					{ link.label }
 				</a>
 			</li>
 		{/each}
 	</ul>
-
-    {#if page.data.user}
-        <div class="ml-auto pl-4 border-l border-gray-100 dark:border-gray-700">
-            <UserDropdown user={ page.data.user } />
-        </div>
-    {/if}
 </nav>
