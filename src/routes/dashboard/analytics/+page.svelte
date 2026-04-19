@@ -22,16 +22,18 @@
     <title>Estadísticas y Analíticas | Dashboard | QR Assistance</title>
 </svelte:head>
 
+
 <main class="flex flex-col gap-6 w-full max-w-6xl mx-auto align-top">
     <div class="flex flex-col gap-2">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Analíticas de Asistencia</h1>
+        <h1 class="text-3xl font-bold text-lds-navy dark:text-lds-gold">Analíticas de Asistencia</h1>
+
         <p class="text-sm text-gray-500 dark:text-gray-400">
             Revisa indicadores dinámicos, retención, puntualidad, fidelidad y crecimiento de tu congregación.
         </p>
     </div>
 
     <!-- TABS -->
-    <Tabs bind:activeTab={ activeTab } options={ tabOptions } />
+    <Tabs bind:activeTab={ activeTab } options={ tabOptions } maxWidth="" />
 
     <div class="w-full flex-1">
         {#if activeTab === 'main'}
