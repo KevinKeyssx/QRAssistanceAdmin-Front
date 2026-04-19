@@ -33,6 +33,7 @@ export default async function connectRequest<T>({
     isInternal = true,
 }: Connect ): Promise<T | ApiError> {
     const url      = isInternal ? `/api/${endpoint}` : `${BASE_URL}/${endpoint}`;
+    console.log('🚀 ~************************************************* connectRequest ~ url:', url)
     const response = await fetch( url, {
         method,
         body    : body ? JSON.stringify( body ) : undefined,
