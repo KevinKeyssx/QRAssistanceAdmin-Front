@@ -6,16 +6,21 @@
     interface Props {
 		darkMode : boolean;
 		onToggle : () => void;
+        className? : string
 	}
 
 
-    let { darkMode, onToggle }: Props = $props();
+    let {
+        darkMode,
+        onToggle,
+        className = ''
+    }: Props = $props();
 </script>
 
 <button
 	onclick={onToggle}
 	aria-label={darkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-	class="w-10 h-10 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 hover:scale-110 active:scale-95 transition-all duration-200"
+	class="w-10 h-10 rounded-full flex items-center justify-center bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 hover:scale-110 active:scale-95 transition-all duration-200 {className}"
 >
     <span class="text-lds-navy dark:text-lds-gold">
         {#if darkMode}
