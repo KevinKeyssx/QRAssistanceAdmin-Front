@@ -43,7 +43,7 @@
 
 <main class="flex flex-col gap-6 w-full max-w-6xl mx-auto align-top">
 	<div class="flex justify-between items-center print:hidden">
-		<h1 class="text-3xl font-bold text-gray-900 dark:text-white">Generador QR</h1>
+		<h1 class="text-3xl font-bold text-lds-navy dark:text-lds-gold">Generador QR</h1>
 
         <button
             onclick = { handleOpenCreate }

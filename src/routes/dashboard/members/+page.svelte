@@ -152,7 +152,7 @@
 <main class="flex flex-col gap-6 w-full max-w-6xl mx-auto align-top">
     <!-- Encabezado -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Miembros</h1>
+        <h1 class="text-3xl font-bold text-lds-navy dark:text-lds-gold tracking-tight">Miembros</h1>
 
         <div class="flex items-center gap-3 w-full sm:w-auto">
             {#if membersQuery.data}
