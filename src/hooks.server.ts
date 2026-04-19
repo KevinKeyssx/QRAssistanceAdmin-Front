@@ -20,19 +20,19 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	if ( isDashboard && !authSession ) throw redirect( 302, '/' );
 
-	if ( isDashboard && user ) {
-		try {
-			await connectRequest( {
-				endpoint	: `validate-user?email=${ encodeURIComponent( user.email )}`,
-				method      : METHOD.GET,
-				isInternal	: true,
-			});
-		} catch ( error ) {
-			await auth.api.signOut({ headers: event.request.headers });
+	// if ( isDashboard && user ) {
+	// 	try {
+	// 		await connectRequest( {
+	// 			endpoint	: `validate-user?email=${ encodeURIComponent( user.email )}`,
+	// 			method      : METHOD.GET,
+	// 			isInternal	: true,
+	// 		});
+	// 	} catch ( error ) {
+	// 		await auth.api.signOut({ headers: event.request.headers });
 
-			throw redirect( 302, '/?error=unauthorized' );
-		}
-	}
+	// 		throw redirect( 302, '/?error=unauthorized' );
+	// 	}
+	// }
 
 	return resolve( event );
 };
