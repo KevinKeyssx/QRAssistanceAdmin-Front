@@ -1,23 +1,45 @@
 <script lang="ts">
-    import { createQuery }    from '@tanstack/svelte-query';
-    import { Line }           from 'svelte-chartjs';
     import {
         Chart as ChartJS,
-        Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale, Filler
-    }                         from 'chart.js';
-
-    ChartJS.register( Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale, Filler );
+        Title,
+        Tooltip,
+        Legend,
+        LineElement,
+        PointElement,
+        CategoryScale,
+        LinearScale,
+        Filler
+    }                       from 'chart.js';
+    import { Line }         from 'svelte-chartjs';
+    import { createQuery }  from '@tanstack/svelte-query';
 
     import connectRequest, {
         isApiError
-    }                         from '$lib/services/fetch.service';
-    import { METHOD }         from '$lib/services/http-codes';
+    }                       from '$lib/services/fetch.service';
+    import { METHOD }       from '$lib/services/http-codes';
     import type { 
         PunctualityItemDTO 
-    }                         from '$lib/models/analytics/analytic.model';
-    import { ENDPOINT }       from '$lib/utils/consts/endpoints';
+    }                       from '$lib/models/analytics/analytic.model';
+    import {
+        getThemeColor,
+        getThemeColorRGBA
+    }                       from '$lib/utils/theme';
+    import { ENDPOINT }     from '$lib/utils/consts/endpoints';
+    import { isDark }       from '$lib/stores/themeStore';
 
-    
+
+    ChartJS.register(
+        Title,
+        Tooltip,
+        Legend,
+        LineElement,
+        PointElement,
+        CategoryScale,
+        LinearScale,
+        Filler
+    );
+
+
     const punctualityQuery = createQuery( () => ({
         queryKey    : [ 'analytics', 'punctuality' ],
         queryFn     : async (): Promise<PunctualityItemDTO[]> => {
@@ -44,25 +66,25 @@
             labels: labels,
             datasets: [
                 {
-                    label: 'Volumen',
-                    data: dataValues,
-                    borderColor: '#1a2a40', // LDS Navy
-                    backgroundColor: 'rgba(202, 168, 97, 0.3)', // Semi-transparent LDS Gold
-                    fill: true,
-                    stepped: true, // Interpolación de paso (StepAfter)
-                    tension: 0,
-                    borderWidth: 2
+                    label           : 'Volumen',
+                    data            : dataValues,
+                    borderColor     : getThemeColor( $isDark ),
+                    backgroundColor : getThemeColorRGBA( 0.15, $isDark ),
+                    fill            : true,
+                    stepped         : true, // Interpolación de paso (StepAfter)
+                    tension         : 0,
+                    borderWidth     : 2
                 }
             ]
         };
     });
-
 </script>
 
+
 <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 w-full h-full flex flex-col min-h-[400px]">
-    
     <div class="mb-6">
         <h2 class="text-xl font-bold text-gray-900 dark:text-white">Puntualidad en Día Domingo</h2>
+
         <p class="text-sm text-gray-500">Volumen de escaneos separados en bloques de 15 minutos.</p>
     </div>
 
@@ -79,12 +101,15 @@
                 options = {{
                     responsive          : true,
                     maintainAspectRatio : false,
-                    plugins             : { legend: { display: false } },
-                    scales              : { y: { beginAtZero: true } },
-                    elements: {
-                        point: { radius: 3, hoverRadius: 6 }
+                    plugins             : { legend: { display: false }},
+                    scales              : { y: { beginAtZero: true }},
+                    elements            : {
+                        point: {
+                            radius      : 3,
+                            hoverRadius : 6
+                        }
                     }
-                }} 
+                }}
             />
         </div>
     {/if}
