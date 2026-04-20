@@ -1,3 +1,5 @@
+import type { LDSClass } from "$lib/types";
+
 export interface QR {
     _id             : string;
     session_id      : string;
@@ -19,4 +21,15 @@ export interface QRHistoryResponse {
     page    : number;
     size    : number;
     pages   : number;
+}
+
+
+export interface QRMapped {
+    id          : string;
+    url         : string;
+    date        : string;
+    startHour   : string;
+    endHour     : string;
+    original    : QR;
+    appClass    : LDSClass;
 }
