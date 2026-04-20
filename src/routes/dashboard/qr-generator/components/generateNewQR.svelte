@@ -12,6 +12,7 @@
     import connectRequest, {
         isApiError
     }                       from "$lib/services/fetch.service";
+    import type { QR }      from "$lib/models/qr/qr.model";
     import Calendar         from "$lib/components/shared/Calendar.svelte";
 	import TimeRangePicker  from "$lib/components/shared/TimeRangePicker.svelte";
 	import ToggleGroup      from "$lib/components/shared/ToggleGroup.svelte";
@@ -19,7 +20,7 @@
 
 
 	interface Props {
-        qr?         : any;
+        qr?         : QR | null;
 		onCancel	: () => void;
 		onSuccess	: () => void;
 	}
@@ -51,7 +52,7 @@
     // svelte-ignore state_referenced_locally
     let selectedLabel	= $state( qr ? ( TYPE_OPTIONS.find( o => o.slug === qr.type )?.label ?? 'Otro' ) : labels[0] );
 	// svelte-ignore state_referenced_locally
-	let selectedDate	= $state<CalendarDate | any>( qr ? parseDate( qr.date ) : today( getLocalTimeZone() ) );
+	let selectedDate	= $state<CalendarDate>( qr ? parseDate( qr.date ) : today( getLocalTimeZone() ) );
 	// svelte-ignore state_referenced_locally
 	let timeRange       = $state({
 		start : qr ? parseTime( qr.start_hour ) : new Time( 9, 0 ),
@@ -66,7 +67,7 @@
 
     // ─── Mutación ────────────────────────────────────────────────────────────
     const qrMutation = createMutation( () => ({
-        mutationFn: async ( payload: any ) => {
+        mutationFn: async ( payload: { type: string, date: string, start_hour: string, end_hour: string } ) => {
             const isEdit    = !!qr?._id;
             const endpoint  = 'qr/generate-qr';
             
@@ -74,7 +75,7 @@
                 endpoint    : endpoint,
                 method      : isEdit ? METHOD.PUT : METHOD.POST,
                 isInternal  : true,
-                body        : isEdit ? { id: qr._id, ...payload } : payload
+                body        : isEdit ? { id: qr!._id, ...payload } : payload
             });
 
             if ( isApiError( result ) ) throw result;
@@ -86,8 +87,9 @@
             queryClient.invalidateQueries({ queryKey: [ 'qr-history' ] });
             onSuccess();
         },
-        onError: ( err: any ) => {
-            toast.error( err.message || 'Error al procesar la solicitud' );
+        onError: ( err: Error | { message?: string } ) => {
+            const message = 'message' in err ? err.message : 'Error al procesar la solicitud';
+            toast.error( message || 'Error al procesar la solicitud' );
         }
     }));
 
@@ -143,8 +145,8 @@
 		qrMutation.mutate({
 			type        : selectedSlug,
 			date        : dateObj.toISOString(),
-			start_hour  : timeRange.start?.toString().slice( 0, 5 ) || '09:00',
-			end_hour    : timeRange.end?.toString().slice( 0, 5 ) || '10:30'
+			start_hour  : timeRange.start?.toString().slice( 0, 5 ),
+			end_hour    : timeRange.end?.toString().slice( 0, 5 )
 		});
 	}
 </script>
