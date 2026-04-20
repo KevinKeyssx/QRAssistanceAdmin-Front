@@ -1,24 +1,29 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-    import QRCodeStyling, {
-        type DrawType
-    }                               from 'qr-code-styling';
-	import { jsPDF }                from 'jspdf';
-    import { toast }                from 'svelte-sonner'
-    import { FileText, Printer }    from 'lucide-svelte';
+    import {
+        CalendarDays,
+        Clock,
+        FileText,
+        Printer
+    }                       from 'lucide-svelte';
+    import { toast }        from 'svelte-sonner';
+    import QRCodeStyling    from 'qr-code-styling';
 
-    import type { LDSClass }    from '$lib/types';
+    import {
+        exportPDF,
+        printQRs,
+        getQRConfig
+    }                           from '$lib/utils/qr-export';
     import { isDark }           from '$lib/stores/themeStore';
     import Dialog               from '$lib/components/shared/Dialog.svelte';
     import ConfirmDelete        from '$lib/components/shared/ConfirmDelete.svelte';
     import { getThemeColor }    from '$lib/utils/theme';
+    import type { QRMapped }    from '$lib/models/qr/qr.model';
 
 
 	export interface Props {
-		appClass	: LDSClass;
-		url			: string;
-		date		: string;
+        qr          : QRMapped;
 		disabled?	: boolean;
 		canManage?	: boolean;
 		onEdit?		: () => void;
@@ -27,9 +32,7 @@
 
 
     let {
-        appClass,
-        url,
-        date,
+        qr,
         disabled  = false,
         canManage = true,
         onEdit,
@@ -47,23 +50,23 @@
 
 
     onMount(() => {
+        const themeColor = getThemeColor();
+
         qrCodeStyling = new QRCodeStyling({
-			width       : 200,
-			height      : 200,
-			dotsOptions : {
-				color : getThemeColor(),
-				type  : 'classy-rounded'
-			},
+            ...getQRConfig( qr.url, 200, 200 ),
+            dotsOptions: {
+                color: themeColor,
+                type: 'classy-rounded'
+            },
             cornersSquareOptions: {
                 type: 'extra-rounded',
-                color: getThemeColor()
+                color: themeColor
             },
             cornersDotOptions: {
                 type: 'dot',
-                color: getThemeColor()
-            },
-            ...configBaseQR( url ),
-		});
+                color: themeColor
+            }
+        });
 
         qrCodeStyling.append( qrRef );
 
@@ -83,123 +86,23 @@
     });
 
 
-    const configBaseQR = ( url: string ) => ({
-        data                : url,
-        type                : 'svg' as DrawType,
-		margin              : 10,
-		backgroundOptions   : { color : '#ffffff' },
-        image               : '/logo.avif',
-        imageOptions        : {
-            saveAsBlob          : true,
-            hideBackgroundDots  : true,
-            imageSize           : 0.4,
-            margin              : 4
-        },
-    });
-
-
-    const generateQR = (
-        width: number,
-        height: number
-    ) =>  new QRCodeStyling({
-        width                   : width,
-        height                  : height,
-        dotsOptions             : { color: '#000000', type: 'classy-rounded' },
-        cornersSquareOptions    : { type: 'extra-rounded', color: '#000000' },
-        cornersDotOptions       : { type: 'dot', color: '#000000' },
-        ...configBaseQR( url ),
-    });
+    const getExportItem = () => qr;
 
 
     async function handlePrint() {
 		if ( disabled ) return;
-
-		const children          : Element[] = Array.from( document.body.children );
-		const hiddenElements    : any[]     = [];
-
-		children.forEach( child => {
-			if ( child.tagName !== 'SCRIPT' && child instanceof HTMLElement ) {
-				hiddenElements.push({ el: child, display: child.style.display });
-
-                child.style.display = 'none';
-			}
-		});
-
-		const printContainer = document.createElement( 'div' );
-
-        printContainer.className = 'print-only-container';
-		printContainer.innerHTML = `
-			<div class="flex flex-col items-center justify-center pt-8 pb-4 w-full">
-				<h2 class="text-4xl font-bold text-black">${ appClass.label }</h2>
-				<p class="text-xl font-medium text-gray-800 mt-2">${ date }</p>
-			</div>
-			<div class="bg-white p-2 rounded-lg flex justify-center items-center w-full" id="print-qr-target"></div>
-		`;
-
-		document.body.appendChild( printContainer );
-
-        const printQR = generateQR( 500, 500 );
-
-		printQR.append( document.getElementById('print-qr-target')! );
-
-        await new Promise( res => setTimeout( res, 100 ) );
-
-		window.print();
-
-		document.body.removeChild( printContainer );
-
-		hiddenElements.forEach( item => {
-			item.el.style.display = item.display;
-		});
+        await printQRs([ getExportItem() ]);
 	}
 
 
     async function handleDownloadPDF() {
 		if ( disabled ) return;
-
-        const pdfQR = generateQR( 1000, 1000 );
-
-        // Extraer el Blob directo mediante la API nativa de la librería (espera que el logo cargue)
-        const blob = await pdfQR.getRawData( 'jpeg' );
-        
-        if ( !blob ) {
-            toast.error( 'Error al generar la imagen del QR.' );
-            return;
+        const success = await exportPDF( getExportItem() );
+        if ( success ) {
+            toast.success( 'PDF descargado correctamente' );
+        } else {
+            toast.error( 'Error al generar el PDF' );
         }
-
-        // Convertir Blob a Base64 asíncronamente para jsPDF
-        const imgData = await new Promise<string>( ( resolve ) => {
-            const reader = new FileReader();
-
-            reader.onloadend = () => resolve( reader.result as string );
-
-            reader.readAsDataURL( blob as Blob );
-        });
-
-		const pdf = new jsPDF({
-			orientation : 'portrait',
-			unit        : 'mm',
-			format      : 'a4'
-		});
-
-		const pdfWidth  = pdf.internal.pageSize.getWidth();
-		const imgWidth  = 150;
-		const imgHeight = imgWidth; // El QR es un cuadrado 1:1 perfecto
-		const x         = ( pdfWidth - imgWidth ) / 2;
-		const y         = 30;
-
-		pdf.setFont( 'helvetica', 'bold' );
-		pdf.setFontSize( 32 );
-		pdf.text( appClass.label, pdfWidth / 2, y, { align: 'center' } );
-
-		pdf.setFont( 'helvetica', 'normal' );
-		pdf.setFontSize( 16 );
-		pdf.text( date, pdfWidth / 2, y + 15, { align: 'center' } );
-
-		pdf.addImage( imgData, 'JPEG', x, y + 25, imgWidth, imgHeight, undefined, 'FAST' );
-		pdf.save( `QR_${ appClass.slug }.pdf` );
-
-        toast.success( 'PDF descargado correctamente' );
 	}
 
 
@@ -207,14 +110,17 @@
         if ( !onDelete ) return;
 
         isDeleting = true;
+
         try {
-            await onDelete();
+            onDelete();
+
             isConfirmOpen = false;
         } finally {
             isDeleting = false;
         }
     }
 </script>
+
 
 <div
     bind:this = { cardRef }
@@ -252,26 +158,30 @@
     <div class="p-6 flex flex-col items-center gap-5 w-full">
         <!-- Encabezado de la Tarjeta -->
         <div class="flex flex-col items-center gap-2">
-            <!-- <div class="w-12 h-12 rounded-xl bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center text-lds-navy dark:text-lds-gold shadow-inner transition-transform duration-500 group-hover:scale-110">
-                {#if appClass.icon}
-                    {@const Icon = appClass.icon}
-                    <Icon class="w-6 h-6" />
-                {:else}
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+            <div class="flex gap-2 items-center">
+                {#if qr.appClass.icon}
+                    <span class="text-lds-navy dark:text-lds-gold">
+                        <qr.appClass.icon />
+                    </span>
                 {/if}
-            </div> -->
 
-            <h3 class="font-bold text-xl text-gray-900 dark:text-gray-100 text-center tracking-tight leading-tight px-4">
-                { appClass.label }
-            </h3>
+                <h3 class="font-bold text-lg text-gray-900 dark:text-gray-100 text-center tracking-tight leading-tight px-0">
+                    { qr.appClass.label }
+                </h3>
+            </div>
 
-            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700/60 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
-                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                { date }
+            <div class="flex flex-wrap items-center justify-center gap-2">
+                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700/60 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                    <CalendarDays class="w-3 h-3" />
+
+                    { qr.date }
+                </div>
+
+                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-lds-gold/10 text-[10px] font-bold uppercase tracking-widest text-lds-navy dark:text-lds-gold">
+                    <Clock class="w-3 h-3" />
+
+                    { qr.startHour } - { qr.endHour }
+                </div>
             </div>
         </div>
 
@@ -306,7 +216,6 @@
     </div>
 </div>
 
-
 <!-- Dialog de Confirmación de Eliminación -->
 <Dialog
     open    = { isConfirmOpen }
@@ -319,7 +228,21 @@
         isPending   = { isDeleting }
         title       = "¿Eliminar código QR?"
         description = "Esta programación se eliminará permanentemente. Esta acción no se puede deshacer."
-        itemName    = { appClass.label }
-        itemExtra   = { date }
+        itemName    = { qr.appClass.label }
+        itemExtra   = { qr.date }
     />
 </Dialog>
+
+
+<style>
+    @media print {
+        :global(.print-only-container) {
+            display         : flex !important;
+            flex-direction  : column !important;
+            align-items     : center !important;
+            justify-content : center !important;
+            width           : 100% !important;
+            margin          : 0 auto !important;
+        }
+    }
+</style>
