@@ -1,9 +1,8 @@
-import { METHOD } from './http-codes';
-
-
-// const BASE_URL = import.meta.env.VITE_API_URL as string;
-import { env } from '$env/dynamic/public';
 import { browser } from '$app/environment';
+
+import { METHOD }   from './http-codes';
+import { env }      from '$env/dynamic/public';
+
 
 const BASE_URL = env.PUBLIC_VITE_API_URL;
 
@@ -40,15 +39,13 @@ export default async function connectRequest<T>({
     let url = '';
 
     if (isInternal) {
-        // En el navegador, /api/ funciona perfecto.
-        // En el servidor (Vercel Function), DEBES usar la URL completa del frontend.
         url = browser 
             ? `/api/${endpoint}` 
             : `${env.PUBLIC_VITE_FRONTEND_URL}/api/${endpoint}`; 
     } else {
         url = `${BASE_URL}/${endpoint}`;
     }
-    console.log('🚀 ~************************************************* connectRequest ~ url:', url)
+
     const response = await fetch( url, {
         method,
         body    : body ? JSON.stringify( body ) : undefined,
