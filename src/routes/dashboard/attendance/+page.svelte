@@ -27,6 +27,7 @@
     import Dialog           from '$lib/components/shared/Dialog.svelte';
     import ConfirmDelete    from '$lib/components/shared/ConfirmDelete.svelte';
     import ClasesSelect     from '$lib/components/shared/filter/ClasesSelect.svelte';
+    import { getClassName } from '$lib/utils/classes';
 
     // ─── Estado ───────────────────────────────────────────────────────────────
     let memberSearch        = $state( '' );
@@ -335,11 +336,13 @@
                                     <h4 class="font-bold text-gray-900 dark:text-gray-100 text-[17px] tracking-tight truncate">
                                         { item.member.name } { item.member.last_name }
                                     </h4>
+
                                     <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
                                         <div class="flex items-center gap-1.5 px-2.5 py-1 bg-gray-100/80 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 rounded-lg text-[11px] font-black uppercase tracking-wider">
                                             <div class="w-1.5 h-1.5 rounded-full bg-lds-navy dark:bg-lds-gold"></div>
-                                            { item.qr.type }
+                                            { getClassName( item.qr.type )}
                                         </div>
+
                                         <div class="flex items-center gap-1 text-[13px] text-gray-400 dark:text-gray-500 font-medium">
                                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -347,6 +350,7 @@
                                             { item.qr.start_hour } — { item.qr.end_hour }
                                         </div>
                                     </div>
+
                                     <div class="flex items-center gap-1.5 text-xs font-semibold text-gray-400 dark:text-gray-500 mt-2 uppercase tracking-wide">
                                         <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
