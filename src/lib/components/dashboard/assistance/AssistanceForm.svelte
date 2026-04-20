@@ -20,7 +20,8 @@
 	import type { 
 		QRHistoryResponse 
 	}								from '$lib/models/qr/qr.model';
-    import Combobox                 from '$lib/components/shared/Combobox.svelte';
+    import Combobox                 from '../../../components/shared/Combobox.svelte';
+    import { getClassName }         from '$lib/utils/classes';
 
 
 	interface Props {
@@ -82,13 +83,13 @@
 				endpoint   : `qr/get-history?year=${ new Date().getFullYear() }&page=1&size=100`,
 				method     : METHOD.GET,
 				isInternal : true
-			} );
+			});
 
             if ( isApiError( result )) throw result;
 
             return result.items.map( q => ({
 				value : q.session_id,
-				label : `${ q.type.charAt( 0 ).toUpperCase() + q.type.slice( 1 ).replace('-', ' ') } — ${ new Date( q.date ).toLocaleDateString( 'es-ES', { weekday: 'long', day: 'numeric' } ) } (${ q.start_hour })`
+				label : `${ getClassName( q.type ) } — ${ new Date( q.date ).toLocaleDateString( 'es-ES', { weekday: 'long', day: 'numeric' } ) } (${ q.start_hour })`
 			}));
 		},
 		staleTime : 1000 * 60 * 10
@@ -109,11 +110,12 @@
 		},
 		onSuccess : ( res ) => {
 			if ( res.status === 201 ) {
-				toast.success( 'Asistencia registrada correctamente' );
+				toast.success( 'Asistencia registrada correctamente.' );
 			} else if ( res.status === 200 ) {
-				toast.info( 'Esta asistencia ya existe' );
+				toast.info( 'Asistencia ya registrada.' );
 			}
-			queryClient.invalidateQueries( { queryKey: [ 'assistances' ] } );
+
+            queryClient.invalidateQueries( { queryKey: [ 'assistances' ] } );
 			onSuccess?.( );
 		},
 		onError : ( err: any ) => {
