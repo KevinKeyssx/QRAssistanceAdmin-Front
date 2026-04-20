@@ -13,11 +13,9 @@
 		TrendingUp,
 		ArrowRight,
 		Quote,
-		LoaderCircle,
 		MessageSquareText
 	}						from 'lucide-svelte';
 	import { fly }          from 'svelte/transition';
-	import * as XLSX		from 'xlsx';
 	import { toast }		from 'svelte-sonner';
 
 	import connectRequest, {
@@ -34,6 +32,7 @@
 	}								from '$lib/models/qr/qr.model';
 	import Dialog					from '$lib/components/shared/Dialog.svelte';
 	import AssistanceForm			from '$lib/components/dashboard/assistance/AssistanceForm.svelte';
+	import ReportClassDialog		from '$lib/components/dashboard/assistance/ReportClassDialog.svelte';
 
 
 	let { data }: { data: LayoutData } = $props();
@@ -43,7 +42,7 @@
 
 	// ─── Estado ───────────────────────────────────────────────────────────────
     let isRegisterDialogOpen    = $state( false );
-	let isGeneratingExcel       = $state( false );
+	let isReportDialogOpen      = $state( false );
 
 	const queryClient = useQueryClient();
 
@@ -56,9 +55,9 @@
 				method     : METHOD.GET,
 				isInternal : true
 			});
-	
+
             if ( isApiError( result )) throw result;
-	
+
             return result;
 		}
 	}));
@@ -81,7 +80,7 @@
 			const newThisMonth = result.items.filter( ( m ) => {
 				const date = new Date( m.created_at );
 				return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
-			} ).length;
+			}).length;
 
 			return {
 				total : result.total,
@@ -98,8 +97,13 @@
 				endpoint   : `qr/get-history?year=${ new Date().getFullYear() }&page=1&size=50`,
 				method     : METHOD.GET,
 				isInternal : true
-			} );
-			if ( isApiError( result ) ) throw result;
+			});
+
+            if ( isApiError( result )) {
+                toast.error( 'Error al obtener las sesiones' );
+
+                return [];
+            };
 
 			// Filtrar las creadas hoy
 			return result.items.filter( ( s ) => s.date === today );
@@ -116,55 +120,25 @@
 				isInternal : true
 			});
 	
-            if ( isApiError( result ) ) throw result;
+            if ( isApiError( result )) {
+                toast.error( 'Error al obtener las encuestas' );
+
+                return { yes: 0, no: 0, total: 0 };
+            };
 
 			// Calcular balance total
 			let yes = 0;
 			let no  = 0;
-			Object.values( result ).forEach( ( v ) => {
+
+            Object.values( result ).forEach( ( v ) => {
 				yes += v.yes;
 				no  += v.no;
-			} );
+			});
 
 			return { yes, no, total: yes + no };
 		}
 	}));
 
-	// ─── Lógica Excel ────────────────────────────────────────────────────────
-	async function exportTodayReport( ) {
-		const assistances = todayAssistanceQuery.data?.items;
-
-        if ( !assistances || assistances.length === 0 ) {
-			toast.error( 'No hay asistencias registradas hoy para exportar.' );
-			return;
-		}
-
-		isGeneratingExcel = true;
-
-		try {
-			const dataToExport = assistances.map( ( a ) => ( {
-				'Fecha'		    : new Date( a.created_at ).toLocaleDateString( 'es-ES' ),
-				'Hora'		    : new Date( a.created_at ).toLocaleTimeString( 'es-ES', { hour: '2-digit', minute: '2-digit' } ),
-				'Miembro'		: `${a.member.name} ${a.member.last_name}`,
-				'Organización'  : a.qr.type.toUpperCase().replace( '-', ' ' ),
-				// 'Apellidos'	    : a.member.last_name,
-				// 'ID Sesión'	    : a.qr.session_id
-			}));
-
-			const worksheet = XLSX.utils.json_to_sheet( dataToExport );
-			const workbook  = XLSX.utils.book_new();
-
-            XLSX.utils.book_append_sheet( workbook, worksheet, 'Asistencias' );
-
-			XLSX.writeFile( workbook, `Reporte_Asistencias_${ today }.xlsx` );
-
-            toast.success( 'Reporte generado con éxito' );
-		} catch ( error ) {
-			toast.error( 'Error al generar el reporte' );
-		} finally {
-			isGeneratingExcel = false;
-		}
-	}
 
 	// ─── Citas Inspiradoras ──────────────────────────────────────────────────
 	const quotes = [
@@ -189,10 +163,10 @@
 	>
 		<!-- Efectos de fondo -->
 		<div class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-lds-gold/20 blur-[100px] rounded-full"></div>
-		
+
 		<div class="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
 			<div class="flex flex-col gap-2">
-				<h1 class="text-3xl lg:text-5xl font-black text-white leading-tight">
+				<h1 class="text-3xl lg:text-4xl font-black text-white leading-tight">
 					¡Hola, { data.user?.name ?? 'Administrador' }!
 				</h1>
 
@@ -211,16 +185,11 @@
 
 			<div class="flex flex-wrap gap-3">
 				<button 
-					onclick	= { exportTodayReport }
-					disabled= { ( todayAssistanceQuery.data?.total ?? 0 ) === 0 || isGeneratingExcel }
-					class	= "flex items-center gap-2 px-6 py-3 rounded-2xl bg-lds-gold text-gray-900 font-bold text-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100 shadow-lg shadow-lds-gold/20"
+					onclick	= { ( ) => isReportDialogOpen = true }
+					class	= "flex items-center gap-2 px-6 py-3 rounded-2xl bg-white dark:bg-lds-gold text-gray-900 font-bold text-sm transition-all hover:scale-105 active:scale-95 shadow-lg shadow-lds-gold/20"
 				>
-					{#if isGeneratingExcel}
-						<LoaderCircle class="w-4 h-4 animate-spin" />
-					{:else}
-						<FileSpreadsheet class="w-4 h-4" />
-					{/if}
-					Reporte de Hoy
+					<FileSpreadsheet class="w-4 h-4" />
+					Reportes
 				</button>
 
 				<button 
@@ -281,13 +250,16 @@
 						<Users class="w-6 h-6" />
 					</div>
 				</div>
-				<div>
+
+                <div>
 					<h3 class="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Miembros</h3>
-					<div class="flex items-baseline gap-2 mt-1">
+
+                    <div class="flex items-baseline gap-2 mt-1">
 						<p class="text-4xl font-black text-gray-900 dark:text-white">
 							{ membersStatsQuery.data?.total ?? 0 }
 						</p>
-						<span class="text-xs font-bold text-blue-500">
+
+                        <span class="text-xs font-bold text-blue-500">
 							+{ membersStatsQuery.data?.new ?? 0 } este mes
 						</span>
 					</div>
@@ -305,18 +277,23 @@
 					<div class="p-3 rounded-2xl bg-lds-gold/10 text-lds-gold">
 						<QrCode class="w-6 h-6" />
 					</div>
-					<div class="flex items-center gap-1.5">
+
+                    <div class="flex items-center gap-1.5">
 						<span class="flex h-2 w-2 rounded-full bg-lds-gold animate-ping"></span>
-						<span class="text-[10px] font-black uppercase text-lds-gold">Live</span>
+
+                        <span class="text-[10px] font-black uppercase text-lds-gold">Live</span>
 					</div>
 				</div>
-				<div>
+
+                <div>
 					<h3 class="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Sesiones de Hoy</h3>
-					<p class="text-4xl font-black text-gray-900 dark:text-white mt-1">
+
+                    <p class="text-4xl font-black text-gray-900 dark:text-white mt-1">
 						{ sessionsQuery.data?.length ?? 0 }
 					</p>
 				</div>
-				<a href="/dashboard/qr-generator" class="text-xs font-bold text-lds-gold flex items-center gap-1 hover:gap-2 transition-all">
+
+                <a href="/dashboard/qr-generator" class="text-xs font-bold text-lds-gold flex items-center gap-1 hover:gap-2 transition-all">
 					Ir al generador <ArrowRight class="w-3 h-3" />
 				</a>
 			</div>
@@ -333,20 +310,25 @@
 						<MessageSquareText class="w-6 h-6" />
 					</div>
 				</div>
-				<div>
+
+                <div>
 					<h3 class="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Encuestas del Mes</h3>
-					<div class="flex items-baseline gap-2 mt-1">
+
+                    <div class="flex items-baseline gap-2 mt-1">
 						<p class="text-4xl font-black text-gray-900 dark:text-white">
 							{ surveyQuery.data?.total ?? 0 }
 						</p>
-						<span class="text-xs font-bold text-purple-500">
+
+                        <span class="text-xs font-bold text-purple-500">
 							Respuestas
 						</span>
 					</div>
 				</div>
-				<div class="flex gap-1 h-2 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
+
+                <div class="flex gap-1 h-2 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
 					<div class="h-full bg-emerald-500" style="width: { ( ( surveyQuery.data?.yes ?? 0 ) / ( surveyQuery.data?.total ?? 1 ) ) * 100 }%"></div>
-					<div class="h-full bg-rose-500" style="width: { ( ( surveyQuery.data?.no ?? 0 ) / ( surveyQuery.data?.total ?? 1 ) ) * 100 }%"></div>
+
+                    <div class="h-full bg-rose-500" style="width: { ( ( surveyQuery.data?.no ?? 0 ) / ( surveyQuery.data?.total ?? 1 ) ) * 100 }%"></div>
 				</div>
 			</div>
 		</div>
@@ -360,10 +342,12 @@
 			in:fly	= { { y: 20, duration: 600, delay: 500 } }
 		>
 			<Quote class="w-12 h-12 text-lds-gold opacity-20 absolute top-6 left-6" />
-			<p class="text-xl lg:text-2xl font-medium text-gray-700 dark:text-gray-300 italic max-w-2xl leading-relaxed">
+
+            <p class="text-xl lg:text-2xl font-medium text-gray-700 dark:text-gray-300 italic max-w-2xl leading-relaxed">
 				"{ randomQuote.text }"
 			</p>
-			<span class="text-sm font-black text-lds-gold uppercase tracking-widest">— { randomQuote.author } —</span>
+
+            <span class="text-sm font-black text-lds-gold uppercase tracking-widest">— { randomQuote.author } —</span>
 		</div>
 
 		<!-- ACCESO RÁPIDO A ANALÍTICAS -->
@@ -373,7 +357,8 @@
 		>
 			<div>
 				<h4 class="text-lg font-bold text-gray-900 dark:text-white">Más Analíticas</h4>
-				<p class="text-sm text-gray-500 mt-2">¿Quieres ver la retención o fidelidad del trimestre?</p>
+
+                <p class="text-sm text-gray-500 mt-2">¿Quieres ver la retención o fidelidad del trimestre?</p>
 			</div>
 
             <a 
@@ -402,6 +387,12 @@
 		}}
 	/>
 </Dialog>
+
+
+<ReportClassDialog
+    open    = { isReportDialogOpen }
+    onClose = { ( ) => isReportDialogOpen = false }
+/>
 
 
 <style>
