@@ -22,6 +22,7 @@
     import AssistanceForm   from '$lib/components/dashboard/assistance/AssistanceForm.svelte';
     import Dialog           from '$lib/components/shared/Dialog.svelte';
     import ConfirmDelete    from '$lib/components/shared/ConfirmDelete.svelte';
+    import { getClassName } from '$lib/utils/classes';
 
     // ─── Estado ───────────────────────────────────────────────────────────────
     let searchQuery         = $state( '' );
@@ -268,13 +269,23 @@
                                     </span>
                                 </div>
 
-                                <div class="min-w-0">
+                                <div class="min-w-0 space-y-0.5">
                                     <h4 class="font-bold text-gray-900 dark:text-gray-100 text-base truncate">
                                         { member.name } { member.last_name }
                                     </h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5 truncate">
-                                        { member.classes.join( ', ' ) }
-                                    </p>
+
+                                    <div class="flex gap-2 items-center">
+                                        <div class="px-2.5 py-1 bg-gray-200/80 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 rounded-lg text-xs">
+                                            { getClassName( member.classes[0] )}
+                                        </div>
+
+                                        {#if getClassName( member.classes[1] )}
+                                            <div class="px-2.5 py-1 bg-gray-200/80 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 rounded-lg text-xs">
+                                                { getClassName( member.classes[1] )}
+                                            </div>
+                                        {/if}
+                                    </div>
+
                                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                                         Actualizado { formatShortDate( member.updated_at ) }
                                     </p>
