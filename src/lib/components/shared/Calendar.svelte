@@ -1,19 +1,25 @@
 <script lang="ts">
-    import { DatePicker } from "bits-ui";
-    import type { DateValue } from "@internationalized/date";
+    import { DatePicker }       from "bits-ui";
+    import { type DateValue }   from "@internationalized/date";
+
 
     interface Props {
         value?          : DateValue | any;
         fixedWeeks?     : boolean;
         class?          : string;
         placeholder?    : DateValue;
+        minValue?       : DateValue;
+        maxValue?       : DateValue;
         onValueChange?  : ( value: DateValue | undefined ) => void;
     }
+
 
     let {
         value       = $bindable(),
         fixedWeeks  = true,
         class: className = '',
+        minValue,
+        maxValue,
         ...rest
     }: Props = $props();
 </script>
@@ -23,11 +29,13 @@
         weekdayFormat="short"
         locale="es-ES"
         {fixedWeeks}
+        {minValue}
+        {maxValue}
         bind:value
         {...rest as any}
     >
         <DatePicker.Input
-            class="flex h-[42px] w-full min-w-[240px] items-center rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 transition-all focus-within:ring-2 focus-within:ring-lds-navy dark:focus-within:ring-lds-gold focus-within:border-lds-navy dark:focus-within:border-lds-gold shadow-sm outline-none"
+            class="flex h-[42px] w-full min-w-[150px] items-center rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 transition-all focus-within:ring-2 focus-within:ring-lds-navy dark:focus-within:ring-lds-gold focus-within:border-lds-navy dark:focus-within:border-lds-gold shadow-sm outline-none"
         >
             {#snippet children({ segments })}
                 <div class="flex-1 flex gap-px items-center">
