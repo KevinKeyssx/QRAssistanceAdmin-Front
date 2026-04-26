@@ -20,6 +20,7 @@
 
     // Definición manual de props para evitar problemas con uniones complejas de Bits UI
     interface Props {
+        id?           : string;
         items         : SelectItem[];
         value?        : string | string[];
         type?         : 'single' | 'multiple';
@@ -37,6 +38,7 @@
 
     // ─── Props ────────────────────────────────────────────────────────────────────
     let {
+        id,
         items,
         placeholder  = 'Selecciona una opción',
         label,
@@ -64,7 +66,7 @@
 </script>
 
 
-<div class="inline-block { className }">
+<div {id} class="inline-block { className }">
     {#if label}
         <!-- svelte-ignore a11y_label_has_associated_control -->
         <label class="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5 ml-1">
