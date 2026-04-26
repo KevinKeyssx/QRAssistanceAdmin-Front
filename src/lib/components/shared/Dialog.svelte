@@ -44,7 +44,7 @@
 	>
 		<!-- Panel del Modal Analógico -->
 		<div 
-			class		= "relative w-full max-w-xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col"
+			class		= "relative w-full max-w-xl max-h-[calc(100vh-2rem)] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
 			onclick		= { ( e ) => e.stopPropagation() }
 			in:fly		= {{ y: 20, duration: 300, opacity: 0 }}
 			out:fly		= {{ y: 10, duration: 200, opacity: 0 }}
@@ -62,7 +62,7 @@
 
 			<!-- Cabecera Estética de Título y Descripción -->
 			{#if title || description}
-				<div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">
+				<div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700 shrink-0">
 					{#if title}
 						<h2 class="text-xl font-bold text-gray-900 dark:text-white pr-8">
 							{ title }
@@ -78,7 +78,7 @@
 			{/if}
 
 			<!-- Contenido Central Inyectado mediante Snippet -->
-			<div class="px-6 py-6">
+			<div class="px-6 py-6 overflow-y-auto min-h-0">
 				{@render children()}
 			</div>
 		</div>
