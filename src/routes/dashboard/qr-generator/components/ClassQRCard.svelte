@@ -5,7 +5,9 @@
         CalendarDays,
         Clock,
         FileText,
-        Printer
+        Pen,
+        Printer,
+        Trash
     }                       from 'lucide-svelte';
     import { toast }        from 'svelte-sonner';
     import QRCodeStyling    from 'qr-code-styling';
@@ -211,6 +213,23 @@
                 <FileText class="sm:hidden w-4 h-4" />
 
                 <span class="hidden sm:flex">PDF</span>
+            </button>
+
+            <!-- Acciones cuand es mobil -->
+            <button
+                onclick = { onEdit }
+                { disabled }
+                class   = "flex md:hidden items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gray-50 text-gray-700 dark:bg-gray-700/50 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-200/50 dark:border-gray-600/50 transition-all font-bold text-sm shadow-sm active:scale-95 disabled:opacity-50"
+            >
+                <Pen class="w-4 h-4 dark:text-lds-gold dark:hover:text-lds-navy" />
+            </button>
+
+            <button
+                onclick = { () => isConfirmOpen = true }
+                { disabled }
+                class   = "flex md:hidden items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gray-50 text-gray-700 dark:bg-gray-700/50 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-200/50 dark:border-gray-600/50 transition-all font-bold text-sm shadow-sm active:scale-95 disabled:opacity-50"
+            >
+                <Trash class="w-4 h-4 hover:text-red-500" />
             </button>
         </div>
     </div>
