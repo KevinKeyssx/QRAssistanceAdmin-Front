@@ -1,6 +1,7 @@
 <script lang="ts">
     import { TimeRangeField } from "bits-ui";
     import type { TimeValue } from "bits-ui";
+    import { Time } from "@internationalized/date";
 
     interface TimeRange {
         start: TimeValue | undefined;
@@ -21,6 +22,24 @@
         class: className = '',
         ...rest
     }: Props = $props();
+
+    let prevStartHour   = $state(value?.start?.hour);
+    let prevStartMinute = $state(value?.start?.minute);
+
+    $effect(() => {
+        if (value?.start) {
+            const h = value.start.hour;
+            const m = value.start.minute;
+
+            if (h !== prevStartHour || m !== prevStartMinute) {
+                prevStartHour = h;
+                prevStartMinute = m;
+
+                const newHour = Math.min(23, h + 1);
+                value.end = new Time(newHour, m, value.start.second, value.start.millisecond);
+            }
+        }
+    });
 </script>
 
 <div class={className}>
