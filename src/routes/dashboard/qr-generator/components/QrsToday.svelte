@@ -62,7 +62,7 @@
 <div in:fade={{ duration: 300 }} class="flex flex-col gap-6 w-full">
     <!-- Estado: Cargando -->
     {#if isPending}
-        <div class="grid  grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
             {#each [ 1, 2, 3, 4 ] as _}
                 <div class="w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 animate-pulse p-6 flex flex-col items-center gap-5">
                     <div class="flex flex-col items-center gap-3 w-full">
