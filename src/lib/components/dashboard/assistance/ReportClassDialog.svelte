@@ -86,7 +86,7 @@
 
             toast.success( `Reporte ${ qrType ? `de ${ label }` : 'general' } generado con éxito` );
         } catch ( error ) {
-            console.error( 'Error exportando excel:', error );
+            console.error( 'Error exportando excel' );
             toast.error( 'Error al generar el reporte' );
         } finally {
             loadingSlug = null;
@@ -102,13 +102,13 @@
     onClose     = { onClose }
 >
     <div class="flex flex-col gap-6 py-2">
-        
         <!-- SECCIÓN: SELECTOR DE FECHA -->
         <div class="flex flex-col gap-2 p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
             <div class="flex items-center gap-2 mb-1">
                 <CalendarIcon class="w-4 h-4 text-lds-navy dark:text-lds-gold" />
                 <span class="text-xs font-black uppercase tracking-widest text-gray-500">Fecha del Reporte</span>
             </div>
+
             <Calendar bind:value={ selectedDate } class="w-full" />
         </div>
 
@@ -126,8 +126,10 @@
                     <div class="p-3 rounded-xl bg-white/10 text-lds-gold">
                         <FileSpreadsheet class="w-6 h-6" />
                     </div>
+
                     <div class="flex flex-col items-start translate-z-0">
                         <span class="text-white font-bold text-lg">Reporte General</span>
+
                         <span class="text-white/60 text-[10px] uppercase tracking-widest font-black">
                             { selectedDate.toString() === getToday( getLocalTimeZone() ).toString() ? 'Todas las organizaciones hoy' : `Asistencia del ${ selectedDate.toString() }` }
                         </span>
@@ -148,7 +150,11 @@
 
         <div class="flex items-center gap-4">
             <div class="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
-            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Filtrar por Organización</span>
+
+            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+                Filtrar por Organización
+            </span>
+
             <div class="h-px flex-1 bg-gray-100 dark:bg-gray-800"></div>
         </div>
 
@@ -169,6 +175,7 @@
                                     <ClipboardList class="w-5 h-5" />
                                 {/if}
                             </div>
+
                             <span class="text-sm font-bold text-gray-700 dark:text-gray-200 text-left leading-tight max-w-[120px]">
                                 { appClass.label }
                             </span>
