@@ -35,7 +35,10 @@ export default async function connectRequest<T>({
     headers,
     isInternal = true,
 }: Connect ): Promise<T | ApiError> {
-    const url = isInternal ? `/api/${endpoint}` : `${BASE_URL}/${endpoint}`;
+    const cleanBase     = BASE_URL?.endsWith( '/' ) ? BASE_URL.slice( 0, -1 ) : BASE_URL;
+    const cleanEndpoint = endpoint.startsWith( '/' ) ? endpoint.slice( 1 ) : endpoint;
+
+    const url = isInternal ? `/api/${ cleanEndpoint }` : `${ cleanBase }/${ cleanEndpoint }`;
     // let url = '';
 
     // if (isInternal) {
