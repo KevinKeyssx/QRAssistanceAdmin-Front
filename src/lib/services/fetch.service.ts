@@ -1,4 +1,4 @@
-import { browser } from '$app/environment';
+// import { browser } from '$app/environment';
 
 import { METHOD }   from './http-codes';
 import { env }      from '$env/dynamic/public';
@@ -35,16 +35,16 @@ export default async function connectRequest<T>({
     headers,
     isInternal = true,
 }: Connect ): Promise<T | ApiError> {
-    // const url      = isInternal ? `/api/${endpoint}` : `${BASE_URL}/${endpoint}`;
-    let url = '';
+    const url = isInternal ? `/api/${endpoint}` : `${BASE_URL}/${endpoint}`;
+    // let url = '';
 
-    if (isInternal) {
-        url = browser 
-            ? `/api/${endpoint}` 
-            : `${env.PUBLIC_VITE_FRONTEND_URL}/api/${endpoint}`; 
-    } else {
-        url = `${BASE_URL}/${endpoint}`;
-    }
+    // if (isInternal) {
+    //     url = browser 
+    //         ? `/api/${endpoint}` 
+    //         : `${env.PUBLIC_VITE_FRONTEND_URL}/api/${endpoint}`; 
+    // } else {
+    //     url = `${BASE_URL}/${endpoint}`;
+    // }
 
     const response = await fetch( url, {
         method,
