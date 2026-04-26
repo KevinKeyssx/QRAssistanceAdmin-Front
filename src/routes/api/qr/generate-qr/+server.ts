@@ -11,7 +11,7 @@ export const POST: RequestHandler = async ({ request }) => {
     const body = await request.json();
 
     const data = await connectRequest({
-        endpoint    : 'v1/qrs',
+        endpoint    : 'v1/qrs/',
         method      : METHOD.POST,
         isInternal  : false,
         body        : body
