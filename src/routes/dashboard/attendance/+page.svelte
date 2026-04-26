@@ -2,6 +2,7 @@
     import { fly } from 'svelte/transition';
 
     import { 
+        Funnel,
         SearchIcon, 
         UserPlus 
     }                       from 'lucide-svelte';
@@ -180,34 +181,18 @@
 
 <main class="flex flex-col gap-6 w-full max-w-6xl mx-auto align-top pb-10">
     <!-- Encabezado -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 class="text-3xl font-bold text-lds-navy dark:text-lds-gold tracking-tight">Asistencias</h1>
-
-        <div class="flex items-center gap-3">
-            {#if assistancesQuery.data }
-                <span class="hidden md:inline-flex bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
-                    { totalAssistances } registros
-                </span>
-            {/if }
-
-            <button
-                onclick = { clearFilters }
-                class   = "text-xs font-bold text-lds-navy dark:text-lds-gold hover:underline uppercase tracking-widest px-2 py-1"
-            >
-                Limpiar Filtros
-            </button>
-        </div>
-    </div>
+    <h1 class="text-3xl font-bold text-lds-navy dark:text-lds-gold tracking-tight">Asistencias</h1>
 
     <!-- Barra de controles: filtros -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-end bg-white dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-end bg-white dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm">
         
         <!-- Buscador por Miembro -->
-        <div class="md:col-span-5 flex flex-col gap-2">
+        <div class="lg:col-span-12 xl:col-span-5 flex flex-col gap-2">
             <label for="member-search" class="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">
                 Buscar Miembro
             </label>
-            <div class="flex gap-2">
+
+            <div class="flex gap-3">
                 <div class="relative flex-1">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                         <svg class="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -231,15 +216,15 @@
 
                 <button
                     onclick     = { handleSearch }
-                    class       = "px-5 py-2.5 bg-lds-navy dark:bg-lds-gold text-white dark:text-gray-900 rounded-xl font-bold text-sm shadow-sm hover:opacity-90 transition-all active:scale-95 shrink-0"
+                    class       = "px-6 py-2.5 bg-lds-navy dark:bg-lds-gold text-white dark:text-gray-900 rounded-xl font-bold text-sm shadow-sm hover:opacity-90 transition-all active:scale-95 shrink-0"
                 >
                     <SearchIcon class="w-4 h-4 text-white" />
-                    <!-- Buscar -->
                 </button>
             </div>
         </div>
 
-        <div class="md:col-span-3">
+        <!-- Tipo de Clase -->
+        <div class="lg:col-span-6 xl:col-span-3">
             <ClasesSelect 
                 label         = "Tipo de Clase"
                 bind:value     = { selectedQrType } 
@@ -248,7 +233,7 @@
         </div>
 
         <!-- Filtro por Fecha (Calendar) -->
-        <div class="md:col-span-4 flex flex-col gap-2">
+        <div class="lg:col-span-6 xl:col-span-4 flex flex-col gap-2">
             <label for="date-calendar" class="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">
                 Fecha de Asistencia
             </label>
@@ -271,26 +256,39 @@
     </div>
 
     <!-- Info de resultados -->
-    {#if assistancesQuery.data && !assistancesQuery.isPending }
-        <div in:fly={{ y: -4, duration: 200 }} class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 px-2 mt-1">
-            <span>
-                Mostrando
-                <span class="font-semibold text-gray-700 dark:text-gray-200">
-                    { ( currentPage - 1 ) * pageSize + 1 }–{ Math.min( currentPage * pageSize, totalAssistances ) }
+    <div class="flex justify-between items-center gap-4">
+        {#if assistancesQuery.data && !assistancesQuery.isPending }
+            <div in:fly={{ y: -4, duration: 200 }} class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 px-2 mt-1">
+                <span>
+                    Mostrando
+                    <span class="font-semibold text-gray-700 dark:text-gray-200">
+                        { ( currentPage - 1 ) * pageSize + 1 }–{ Math.min( currentPage * pageSize, totalAssistances ) }
+                    </span>
+                    de
+                    <span class="font-semibold text-gray-700 dark:text-gray-200">
+                        { totalAssistances }
+                    </span>
+                    asistentes
                 </span>
-                de
-                <span class="font-semibold text-gray-700 dark:text-gray-200">
-                    { totalAssistances }
-                </span>
-                asistentes
-            </span>
 
-            {#if activeMemberQuery || selectedQrType || dateFilter }
-                <div class="w-1.5 h-1.5 rounded-full bg-lds-navy dark:bg-lds-gold opacity-40"></div>
-                <span class="italic text-xs">Filtros activos</span>
-            {/if }
-        </div>
-    {/if }
+                {#if activeMemberQuery || selectedQrType || dateFilter }
+                    <div class="w-1.5 h-1.5 rounded-full bg-lds-navy dark:bg-lds-gold opacity-40"></div>
+                    <span class="italic text-xs">Filtros activos</span>
+                {/if }
+            </div>
+        {/if }
+
+        <button
+            onclick = { clearFilters }
+            class   = "flex items-center gap-1 bg-lds-navy dark:bg-lds-gold text-white rounded-xl font-bold text-sm shadow-sm hover:opacity-90 transition-all active:scale-95 shrink-0 px-2 py-1"
+        >
+            <Funnel class="w-4 h-4" />
+
+            <span class="hidden sm:flex md:hidden lg:flex">
+                Limpiar Filtros
+            </span>
+        </button>
+    </div>
 
     <!-- Lista de asistencias -->
     {#if assistancesQuery.isPending }
