@@ -13,7 +13,8 @@
 		TrendingUp,
 		ArrowRight,
 		Quote,
-		MessageSquareText
+		MessageSquareText,
+        ChartColumn
 	}						from 'lucide-svelte';
 	import { fly }          from 'svelte/transition';
 	import { toast }		from 'svelte-sonner';
@@ -166,7 +167,7 @@
 
 		<div class="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
 			<div class="flex flex-col gap-2">
-				<h1 class="text-3xl lg:text-4xl font-black text-white leading-tight">
+				<h1 class="text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black text-white leading-tight">
 					¡Hola, { data.user?.name ?? 'Administrador' }!
 				</h1>
 
@@ -204,7 +205,7 @@
 	</section>
 
 	<!-- ─── GRID DE OPERACIONES ─────────────────────────────────────────── -->
-	<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+	<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 		<!-- CARD: PULSO DE HOY -->
 		<div 
 			class	= "group p-6 rounded-3xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-xl transition-all"
@@ -225,7 +226,7 @@
                 <div>
 					<h3 class="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Asistencia Hoy</h3>
 
-                    <p class="text-4xl font-black text-gray-900 dark:text-white mt-1">
+                    <p class="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white mt-1">
 						{ todayAssistanceQuery.data?.total ?? 0 }
 					</p>
 				</div>
@@ -255,7 +256,7 @@
 					<h3 class="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Miembros</h3>
 
                     <div class="flex items-baseline gap-2 mt-1">
-						<p class="text-4xl font-black text-gray-900 dark:text-white">
+						<p class="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white">
 							{ membersStatsQuery.data?.total ?? 0 }
 						</p>
 
@@ -288,7 +289,7 @@
                 <div>
 					<h3 class="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Sesiones de Hoy</h3>
 
-                    <p class="text-4xl font-black text-gray-900 dark:text-white mt-1">
+                    <p class="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white mt-1">
 						{ sessionsQuery.data?.length ?? 0 }
 					</p>
 				</div>
@@ -315,7 +316,7 @@
 					<h3 class="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Encuestas del Mes</h3>
 
                     <div class="flex items-baseline gap-2 mt-1">
-						<p class="text-4xl font-black text-gray-900 dark:text-white">
+						<p class="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white">
 							{ surveyQuery.data?.total ?? 0 }
 						</p>
 
@@ -341,9 +342,9 @@
 			class	= "lg:col-span-2 relative p-10 rounded-3xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-xl flex flex-col justify-center items-center text-center gap-4 overflow-hidden"
 			in:fly	= { { y: 20, duration: 600, delay: 500 } }
 		>
-			<Quote class="w-12 h-12 text-lds-gold opacity-20 absolute top-6 left-6" />
+			<Quote class="w-8 h-8 sm:w-12 sm:h-12 text-lds-gold opacity-20 absolute top-6 left-6" />
 
-            <p class="text-xl lg:text-2xl font-medium text-gray-700 dark:text-gray-300 italic max-w-2xl leading-relaxed">
+            <p class="text-md sm:text-xl lg:text-2xl font-medium text-gray-700 dark:text-gray-300 italic max-w-2xl leading-relaxed">
 				"{ randomQuote.text }"
 			</p>
 
@@ -358,14 +359,18 @@
 			<div>
 				<h4 class="text-lg font-bold text-gray-900 dark:text-white">Más Analíticas</h4>
 
-                <p class="text-sm text-gray-500 mt-2">¿Quieres ver la retención o fidelidad del trimestre?</p>
+                <p class="text-sm text-gray-500 mt-2">¿Quieres ver la retención o fidelidad del barrio?</p>
 			</div>
 
-            <a 
+            <a
 				href	= "/dashboard/analytics"
-				class	= "flex items-center justify-center gap-2 w-full py-4 rounded-2xl bg-lds-navy dark:bg-lds-gold text-white dark:text-gray-900 font-bold text-sm transition-all hover:opacity-90 active:scale-95"
+				class	= "flex items-center justify-center gap-2 w-full py-4 rounded-2xl bg-lds-navy dark:bg-lds-gold text-white font-bold text-sm transition-all hover:opacity-90 active:scale-95"
 			>
-				Ver Analíticas Detalladas
+                <ChartColumn class="w-5 h-5" />
+
+                <span class="lg:hidden xl:block">
+                    Ver Analíticas Detalladas
+                </span>
 			</a>
 		</div>
 	</section>
