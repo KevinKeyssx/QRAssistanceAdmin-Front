@@ -59,16 +59,6 @@
 
         return todayQuery.data.map( item => {
             let appClass = LDS_ALL_CLASSES.find( c => c.slug === item.type );
-            // let appClass = LDS_CLASSES.find( c => c.slug === item.type );
-
-            // if ( !appClass ) {
-            //     appClass = {
-            //         slug            : item.type,
-            //         label           : getClassName( item.type ),
-            //         icon            : null,
-            //         classCompatible : []
-            //     } as any; // Cast for safety in the mapping fallback
-            // }
 
             const url = `${ env.PUBLIC_FRONTEND_QR_URL }/${ item.session_id }?class=${ item.type }`;
 
@@ -141,16 +131,17 @@
 
         <button
             onclick = { handleOpenCreate }
-            class   = "bg-lds-navy text-white dark:bg-lds-gold dark:text-gray-900 px-4 py-1.5 rounded-full text-sm font-semibold shadow-sm flex gap-1.5 items-center hover:opacity-90 transition-all active:scale-95"
+            class   = "bg-lds-navy text-white dark:bg-lds-gold px-4 py-1.5 rounded-lg text-sm font-semibold shadow-sm flex gap-1.5 items-center hover:opacity-90 transition-all active:scale-95 hover:shadow-2xl"
         >
             <QRIcon />
+
             <span class="hidden sm:flex">Programar nuevo QR</span>
         </button>
 	</div>
 
     <!-- TABS -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <Tabs bind:activeTab={ activeTab } options={ tabOptions } />
+        <Tabs bind:activeTab={ activeTab } options={ tabOptions } maxWidth="max-w-[400px]" />
 
         {#if activeTab === 'today' && mappedItems.length > 0}
             <div class="flex items-center gap-2 print:hidden" in:fade>
