@@ -1,4 +1,6 @@
 <script lang="ts">
+    import Select from "./Select.svelte";
+
     interface Props {
         currentPage     : number;
         totalPages      : number;
@@ -54,7 +56,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                     </svg>
 
-                    <span class="hidden sm:flex">
+                    <span class="hidden sm:flex md:hidden lg:flex">
                         Anterior
                     </span>
                 </button>
@@ -88,7 +90,7 @@
                         disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:text-gray-600
                         shadow-sm active:scale-95"
                 >
-                    <span class="hidden sm:flex">
+                    <span class="hidden sm:flex md:hidden lg:flex">
                         Siguiente
                     </span>
 
@@ -103,24 +105,24 @@
 
         <!-- Selector de tamaño por página -->
         <div class="relative shrink-0 order-3">
-            <select
-                id          = "page-size-select"
-                value       = { pageSize }
-                onchange    = { ( e ) => onPageSizeChange( Number( ( e.target as HTMLSelectElement ).value ) ) }
-                class       = "appearance-none h-full pl-4 pr-9 py-2 rounded-lg text-sm font-semibold outline-none transition-all duration-200
-                    bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300
-                    border border-gray-200 dark:border-gray-700
-                    focus:border-lds-navy dark:focus:border-lds-gold shadow-sm cursor-pointer"
-            >
-                {#each pageSizeOptions as size}
-                    <option value={ size }>{ size } por página</option>
-                {/each}
-            </select>
+            <div class="md:hidden lg:block">
+                <Select
+                    id            = "page-size-select"
+                    items         = { pageSizeOptions.map( size => ({ value: size.toString(), label: `${ size } por página` }) ) }
+                    value         = { pageSize.toString() }
+                    onValueChange = { ( v ) => onPageSizeChange( Number( v ) ) }
+                    class         = "w-40"
+                />
+            </div>
 
-            <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
-                <svg class="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
+            <div class="hidden md:block lg:hidden">
+                <Select
+                    id            = "page-size-select"
+                    items         = { pageSizeOptions.map( size => ({ value: size.toString(), label: `${ size }` }) ) }
+                    value         = { pageSize.toString() }
+                    onValueChange = { ( v ) => onPageSizeChange( Number( v ) ) }
+                    class         = "w-20"
+                />
             </div>
         </div>
     </div>
