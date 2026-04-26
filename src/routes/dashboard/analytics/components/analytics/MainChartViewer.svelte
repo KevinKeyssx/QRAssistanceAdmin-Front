@@ -113,25 +113,27 @@
     });
 </script>
 
-<div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 w-full h-full flex flex-col min-h-[500px]">
-    <div class="mb-6 flex flex-col xl:flex-row justify-between items-start xl:items-end gap-4 border-b border-gray-100 dark:border-gray-700 pb-4">
-        <div>
+<div class="p-4 sm:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 w-full h-full flex flex-col overflow-hidden">
+    <div class="mb-6 flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 border-b border-gray-100 dark:border-gray-700 pb-6">
+        <div class="flex flex-col gap-1">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">Panorama General de Asistencia</h2>
-
-            <p class="text-sm text-gray-500">Métricas dinámicas de asistencia global, mensual o por organización.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Métricas dinámicas de asistencia global, mensual o por organización.</p>
         </div>
 
-        <div class="flex flex-wrap items-end gap-3 w-full xl:w-auto">
-            <YearSelect bind:value={ year } class="w-28" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-1 xl:flex xl:items-end gap-3 w-full xl:w-auto">
+            <YearSelect 
+                bind:value = { year } 
+                class      = "w-full xl:w-28" 
+            />
 
             <MonthSelect 
-                bind:value={ month } 
-                class="w-44" 
+                bind:value = { month } 
+                class      = "w-full xl:w-44" 
             />
 
             <ClasesSelect 
-                bind:value={ qrType } 
-                class="w-48"
+                bind:value = { qrType } 
+                class      = "w-full xl:w-48"
             />
         </div>
     </div>
@@ -143,7 +145,7 @@
             <p>Error al cargar el panorama general.</p>
         </div>
     {:else if mainChartQuery.data && chartData}
-        <div class="relative w-full flex-1 h-[400px]">
+        <div class="relative w-full h-[350px] md:h-[400px] min-w-0">
             <Line 
                 data    = { chartData } 
                 options = {{
