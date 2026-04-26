@@ -5,9 +5,10 @@
         createMutation, 
         useQueryClient,
         createQuery
-    }                   from '@tanstack/svelte-query';
-    import { toast }    from 'svelte-sonner';
-    import { UserPlus } from 'lucide-svelte';
+    }                                   from '@tanstack/svelte-query';
+    import { toast }                    from 'svelte-sonner';
+    import { FingerprintPattern, Plus } from 'lucide-svelte';
+
 
     import type { 
         Member, 
@@ -22,6 +23,7 @@
     import AssistanceForm   from '$lib/components/dashboard/assistance/AssistanceForm.svelte';
     import Dialog           from '$lib/components/shared/Dialog.svelte';
     import ConfirmDelete    from '$lib/components/shared/ConfirmDelete.svelte';
+    import ActionButtons    from '$lib/components/shared/ActionButtons.svelte';
     import { getClassName } from '$lib/utils/classes';
 
     // ─── Estado ───────────────────────────────────────────────────────────────
@@ -155,23 +157,14 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 class="text-3xl font-bold text-lds-navy dark:text-lds-gold tracking-tight">Miembros</h1>
 
-        <div class="flex items-center gap-3 w-full sm:w-auto">
-            {#if membersQuery.data}
-                <span class="hidden md:inline-flex bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
-                    { totalMembers } miembros
-                </span>
-            {/if}
+        <button
+            onclick = { () => openEdit() }
+            class   = "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-lds-navy dark:bg-lds-gold text-white dark:text-gray-900 rounded-lg font-bold text-sm shadow-sm hover:opacity-90 transition-all active:scale-95"
+        >
+            <Plus class="w-4 h-4" />
 
-            <button
-                onclick = { () => openEdit() }
-                class   = "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-lds-navy dark:bg-lds-gold text-white dark:text-gray-900 rounded-xl font-bold text-sm shadow-sm hover:opacity-90 transition-all active:scale-95"
-            >
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                <span>Agregar Miembro</span>
-            </button>
-        </div>
+            <span>Agregar Miembro</span>
+        </button>
     </div>
 
     <!-- Barra de controles: buscador -->
@@ -201,7 +194,7 @@
 
             <button
                 onclick = { handleSearch }
-                class   = "px-6 py-2.5 bg-lds-navy dark:bg-lds-gold text-white dark:text-gray-900 rounded-xl font-bold text-sm shadow-sm hover:opacity-90 transition-all active:scale-95"
+                class   = "px-6 py-2.5 bg-lds-navy dark:bg-lds-gold text-white dark:text-gray-900 rounded-lg font-bold text-sm shadow-sm hover:opacity-90 transition-all active:scale-95"
             >
                 Buscar
             </button>
@@ -263,24 +256,24 @@
                             <!-- Avatar + Info -->
                             <div class="flex items-center gap-4 min-w-0">
                                 <!-- Iniciales avatar -->
-                                <div class="w-12 h-12 sm:w-14 sm:h-14 bg-lds-navy dark:bg-lds-gold rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                                <div class="w-10 h-10 sm:w-14 sm:h-14 md:w-10 md:h-10 lg:w-14 lg:h-14 bg-lds-navy dark:bg-lds-gold rounded-xl flex items-center justify-center shrink-0 shadow-sm">
                                     <span class="text-white dark:text-gray-900 font-bold text-sm sm:text-base tracking-wide">
                                         { getInitials( member.name, member.last_name ) }
                                     </span>
                                 </div>
 
                                 <div class="min-w-0 space-y-0.5">
-                                    <h4 class="font-bold text-gray-900 dark:text-gray-100 text-base truncate">
+                                    <h4 class="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base md:text-sm lg:text-base truncate">
                                         { member.name } { member.last_name }
                                     </h4>
 
                                     <div class="flex gap-2 items-center">
-                                        <div class="px-2.5 py-1 bg-gray-200/80 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 rounded-lg text-xs">
+                                        <div class="px-2.5 py-1 bg-gray-200/80 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 rounded-lg text-xs sm:text-sm md:text-xs lg:text-sm">
                                             { getClassName( member.classes[0] )}
                                         </div>
 
                                         {#if getClassName( member.classes[1] )}
-                                            <div class="px-2.5 py-1 bg-gray-200/80 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 rounded-lg text-xs">
+                                            <div class="px-2.5 py-1 bg-gray-200/80 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 rounded-lg text-xs sm:text-sm md:text-xs lg:text-sm">
                                                 { getClassName( member.classes[1] )}
                                             </div>
                                         {/if}
@@ -293,49 +286,25 @@
                             </div>
 
                             <!-- Badge + Acciones -->
-                            <div class="flex items-center gap-2 sm:gap-3 shrink-0 ml-3">
+                            <div class="flex items-center gap-1 sm:gap-3 md:gap-1 lg:gap-3 shrink-0 ">
                                 {#if member.saveFinger}
-                                    <span class="hidden sm:inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs px-2.5 py-1.5 rounded-full font-semibold">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M17.81 4.47c-.08 0-.16-.02-.23-.06C15.66 3.42 14 3 12.01 3c-1.98 0-3.86.47-5.57 1.41-.24.13-.54.04-.68-.2-.13-.24-.04-.55.2-.68C7.82 2.52 9.86 2 12.01 2c2.13 0 3.99.47 6.03 1.52.25.13.34.43.21.67-.09.18-.27.28-.44.28zM3.5 9.72c-.1 0-.2-.03-.29-.09-.23-.16-.28-.47-.12-.7.99-1.4 2.25-2.5 3.75-3.27C9.98 4.04 14 4.03 17.15 6.07c1.5.9 2.75 2.1 3.76 3.59.16.23.1.54-.13.7-.23.16-.54.1-.7-.13-.92-1.37-2.07-2.47-3.45-3.3-2.9-1.82-6.64-1.81-9.52.04-1.38.83-2.54 1.93-3.4 3.21-.09.14-.25.21-.41.21zm6.25 12.07c-.08 0-.16-.02-.24-.06l-2.01-1.21c-1.58-.87-2.5-2.51-2.5-4.41V9.85c0-.28.22-.5.5-.5s.5.22.5.5v6.26c0 1.52.71 2.81 1.95 3.51l2 1.2c.24.14.32.46.18.7-.1.16-.26.27-.38.17zM14 22.25h-.01c-1.24 0-2.24-1-2.24-2.24v-6.01c0-.28.22-.5.5-.5s.5.22.5.5v6.01c0 .68.55 1.23 1.23 1.24.68 0 1.24-.55 1.24-1.23v-.51c0-.28.22-.5.5-.5s.5.22.5.5v.51c.01 1.25-.99 2.23-2.22 2.23zm4.09-2.6c-.17 0-.34-.09-.43-.25-.14-.24-.06-.54.17-.68.99-.59 1.58-1.63 1.58-2.78v-3.07c0-.28.22-.5.5-.5s.5.22.5.5v3.07c0 1.5-.81 2.89-2.1 3.65-.08.04-.15.06-.22.06zM9 15.5c-.28 0-.5-.22-.5-.5v-5c0-.28.22-.5.5-.5s.5.22.5.5v5c0 .28-.22.5-.5.5zm3.5 3c-.28 0-.5-.22-.5-.5v-8c0-.28.22-.5.5-.5s.5.22.5.5v8c0 .28-.22.5-.5.5z"/>
-                                        </svg>
-                                        Huella
+                                    <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs px-2.5 py-1.5 rounded-full font-semibold">
+                                        <FingerprintPattern class="w-3 h-3" />
+
+                                        <span class="hidden sm:flex md:hidden lg:flex">
+                                            Huella
+                                        </span>
                                     </span>
                                 {/if}
 
-                                <!-- Botón de registrar asistencia -->
-                                <button
-                                    id      = "register-member-{ member._id }"
-                                    onclick = { ( ) => openRegister( member.ulid_token ) }
-                                    title   = "Registrar asistencia"
-                                    class   = "p-2 rounded-lg text-gray-400 hover:text-lds-navy dark:hover:text-lds-gold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all active:scale-95"
-                                >
-                                    <UserPlus class="w-4 h-4 sm:w-5 sm:h-5" />
-                                </button>
-
-                                <!-- Botón Editar -->
-                                <button
-                                    id      = "edit-member-{ member._id }"
-                                    onclick = { () => openEdit( member ) }
-                                    title   = "Actualizar miembro"
-                                    class   = "p-2 rounded-lg text-gray-400 hover:text-lds-navy dark:hover:text-lds-gold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all active:scale-95"
-                                >
-                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                </button>
-                                
-                                <!-- Botón Eliminar -->
-                                <button
-                                    id      = "delete-member-{ member._id }"
-                                    onclick = { () => openDelete( member ) }
-                                    title   = "Eliminar miembro"
-                                    class   = "p-2 rounded-lg text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all active:scale-95"
-                                >
-                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
+                                <!-- Acciones -->
+                                <ActionButtons
+                                    onRegister  = { ( ) => openRegister( member.ulid_token ) }
+                                    onEdit      = { ( ) => openEdit( member ) }
+                                    onDelete    = { ( ) => openDelete( member ) }
+                                    editTitle   = "Actualizar miembro"
+                                    deleteTitle = "Eliminar miembro"
+                                />
                             </div>
                         </div>
                     {/each}
