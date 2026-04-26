@@ -1,6 +1,6 @@
 import {
     BookHeart,
-    Drama,
+    Coffee,
     HandHeart,
     Tickets
 } from 'lucide-svelte';
@@ -33,7 +33,7 @@ export const LDS_CLASSES: LDSClass[] = [
 
 export const LDS_EXTRAS: LDSClass[] = [
     { slug: 'family-home',  label: 'Noche de Hogar',    icon: FamilyIcon,   classCompatible: [] },
-    { slug: 'show',         label: 'Show',              icon: Drama,        classCompatible: [] },
+    { slug: 'teatime',      label: 'Once',              icon: Coffee,       classCompatible: [] },
     { slug: 'event',        label: 'Evento',            icon: Tickets,      classCompatible: [] },
     { slug: 'meeting',      label: 'Reunión',           icon: MeetingIcon,  classCompatible: [] },
     { slug: 'service',      label: 'Servicio',          icon: HandHeart,    classCompatible: [] },
