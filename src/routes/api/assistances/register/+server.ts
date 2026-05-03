@@ -1,12 +1,14 @@
 import { json }         from '@sveltejs/kit';
-import connectRequest   from '$lib/services/fetch.service';
-import { METHOD }       from '$lib/services/http-codes';
+
 import type { 
     RequestHandler 
 }                       from './$types';
+import connectRequest   from '$lib/services/fetch.service';
+import { METHOD }       from '$lib/services/http-codes';
+import { ENV }          from '$lib/utils/env.server';
 
 
-export const POST: RequestHandler = async ( { request } ) => {
+export const POST: RequestHandler = async ({ request }) => {
 	const body = await request.json();
 
 	try {
@@ -14,7 +16,10 @@ export const POST: RequestHandler = async ( { request } ) => {
             endpoint    : 'v1/assistances/',
             method      : METHOD.POST,
             body,
-            isInternal  : false
+            isInternal  : false,
+            headers     : {
+                'X-Internal-Key': ENV.INTERNAL_SECRET_KEY
+            }
         });
 
 		// Retornamos el result envuelto con el status para facilidad del frontend

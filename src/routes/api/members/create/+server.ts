@@ -1,9 +1,11 @@
-import { json }          from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
+
 import type { 
     RequestHandler 
 }                       from './$types';
 import connectRequest   from '$lib/services/fetch.service';
 import { METHOD }       from '$lib/services/http-codes';
+import { ENV }          from '$lib/utils/env.server';
 
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -13,7 +15,10 @@ export const POST: RequestHandler = async ({ request }) => {
         endpoint    : 'v1/members/',
         method      : METHOD.POST,
         isInternal  : false,
-        body
+        body,
+        headers: {
+            'X-Internal-Key': ENV.INTERNAL_SECRET_KEY
+        }
     });
 
     return json( data );

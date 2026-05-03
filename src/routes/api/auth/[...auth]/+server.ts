@@ -1,8 +1,6 @@
-import { auth } from '$lib/auth/auth';
+import { toSvelteKitHandler } from 'better-auth/svelte-kit';
 
-import { 
-    toSvelteKitHandler 
-}                     from 'better-auth/svelte-kit';
+import { auth } from '$lib/auth/auth';
 
 
 /**

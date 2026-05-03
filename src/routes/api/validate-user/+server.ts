@@ -11,15 +11,11 @@ import { ENV }          from '$lib/utils/env.server';
 /**
  * @description Proxy para validar al usuario contra el backend de whitelist.
  */
-// export const GET: RequestHandler = async ({ url, request }) => {
 export const GET: RequestHandler = async ({ url }) => {
-    console.log('🚀 ~ GET ~ url:', url)
-    const email         = url.searchParams.get( 'email' );
-    // const internalKey   = request.headers.get( 'X-Internal-Key' );
+    const email = url.searchParams.get( 'email' );
 
-    // if ( !email || !internalKey ) {
     if ( !email ) {
-        return json({ error: 'Email e Token son requeridos' }, { status: 400 });
+        return json({ error: 'Email is required' }, { status: 400 });
     }
 
     try {

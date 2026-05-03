@@ -5,9 +5,10 @@ import type {
 }                       from './$types';
 import connectRequest   from '$lib/services/fetch.service';
 import { METHOD }       from '$lib/services/http-codes';
+import { ENV }          from '$lib/utils/env.server';
 
 
-export const GET: RequestHandler = async ( { url } ) => {
+export const GET: RequestHandler = async ({ url }) => {
     const year      = url.searchParams.get( 'year' ) ?? String( new Date().getFullYear() );
     const page      = url.searchParams.get( 'page' ) ?? '1';
     const size      = url.searchParams.get( 'size' ) ?? '10';
@@ -17,7 +18,10 @@ export const GET: RequestHandler = async ( { url } ) => {
         const data = await connectRequest({
             endpoint    : endpoint,
             method      : METHOD.GET,
-            isInternal  : false
+            isInternal  : false,
+            headers     : {
+                'X-Internal-Key': ENV.INTERNAL_SECRET_KEY
+            }
         });
 
         return json( data );

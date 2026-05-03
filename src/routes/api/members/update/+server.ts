@@ -5,6 +5,7 @@ import type {
 }                       from './$types';
 import connectRequest   from '$lib/services/fetch.service';
 import { METHOD }       from '$lib/services/http-codes';
+import { ENV }          from '$lib/utils/env.server';
 
 
 export const PUT: RequestHandler = async ({ request, url }) => {
@@ -15,7 +16,10 @@ export const PUT: RequestHandler = async ({ request, url }) => {
         endpoint    : `v1/members/${ id }`,
         method      : METHOD.PUT,
         isInternal  : false,
-        body
+        body,
+        headers: {
+            'X-Internal-Key': ENV.INTERNAL_SECRET_KEY
+        }
     });
 
     return json( data );
