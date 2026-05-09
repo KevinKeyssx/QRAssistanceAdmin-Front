@@ -68,6 +68,14 @@ export async function exportPDF( item: QRMapped ) {
         pdf.text( date, pdfWidth / 2, y + 15, { align: 'center' } );
 
         pdf.addImage( imgData, 'JPEG', x, y + 25, imgWidth, imgHeight, undefined, 'FAST' );
+
+        // Agregar el QR pequeño debajo
+        const smallImgWidth  = 54;
+        const smallImgHeight = smallImgWidth;
+        const smallX         = ( pdfWidth - smallImgWidth ) / 2;
+        const smallY         = y + 25 + imgHeight + 15; // 15mm de separación
+        pdf.addImage( imgData, 'JPEG', smallX, smallY, smallImgWidth, smallImgHeight, undefined, 'FAST' );
+
         pdf.save( `QR_${ appClass.slug }.pdf` );
 
         return true;
@@ -110,22 +118,46 @@ export async function printQRs( items: QRMapped[] ) {
         const style = document.createElement( 'style' );
         style.innerHTML = `
             @media print {
-                body > *:not(.print-only-container) { display: none !important; }
-                .print-only-container { display: block !important; width: 100% !important; }
+                @page { 
+                    margin: 0;
+                    size: auto;
+                }
+                * {
+                    box-sizing: border-box;
+                }
+                body { 
+                    margin: 0 !important; 
+                    padding: 0 !important; 
+                }
+                body > *:not(.print-only-container) { 
+                    display: none !important; 
+                }
+                .print-only-container { 
+                    display: block !important; 
+                    width: 100% !important; 
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
                 .print-page {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    height: 100vh;
-                    width: 100vw;
+                    height: 98vh;
+                    width: 100%;
                     page-break-after: always;
+                    break-after: page;
+                    page-break-inside: avoid;
                     background: white;
                 }
-                .print-page:last-child { page-break-after: auto; }
+                .print-page:last-child { 
+                    page-break-after: avoid !important;
+                    break-after: avoid !important;
+                }
                 .print-title { font-size: 3.5rem; font-weight: 800; color: black; margin: 0; }
                 .print-date { font-size: 1.5rem; font-weight: 500; color: #374151; margin-top: 1rem; margin-bottom: 2rem; }
-                .print-qr-image { width: 500px; height: 500px; }
+                .print-qr-image { width: 500px; height: 500px; object-fit: contain; }
+                .print-qr-image-small { width: 180px; height: 180px; object-fit: contain; margin-top: 2rem; }
             }
         `;
         document.head.appendChild( style );
@@ -146,6 +178,7 @@ export async function printQRs( items: QRMapped[] ) {
                     <h2 class="print-title">${ item.appClass.label }</h2>
                     <p class="print-date">${ item.date }</p>
                     <img src="${ url }" class="print-qr-image" />
+                    <img src="${ url }" class="print-qr-image-small" />
                 `;
                 printContainer.appendChild( page );
             }
