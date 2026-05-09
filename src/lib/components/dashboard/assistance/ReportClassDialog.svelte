@@ -16,7 +16,7 @@
 
     import Dialog           from '$lib/components/shared/Dialog.svelte';
     import Calendar         from '$lib/components/shared/Calendar.svelte';
-    import { LDS_CLASSES }  from '$lib/utils/classes';
+    import { getClassName, LDS_CLASSES }  from '$lib/utils/classes';
     import connectRequest, { 
         isApiError 
     }                       from '$lib/services/fetch.service';
@@ -70,7 +70,7 @@
                 'Fecha'         : new Date( a.created_at ).toLocaleDateString( 'es-ES' ),
                 'Hora'          : new Date( a.created_at ).toLocaleTimeString( 'es-ES', { hour: '2-digit', minute: '2-digit' } ),
                 'Miembro'       : `${ a.member.name } ${ a.member.last_name }`,
-                'Organización'  : a.qr.type.toUpperCase().replace( '-', ' ' ),
+                'Organización'  : getClassName( a.qr.type ),
             }));
 
             const worksheet = XLSX.utils.json_to_sheet( dataToExport );
