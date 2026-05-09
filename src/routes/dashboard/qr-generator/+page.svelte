@@ -18,6 +18,7 @@
     import GenerateNewQR            from './components/generateNewQR.svelte';
     import QRHistory                from './components/QRHistory.svelte';
     import QrsToday                 from './components/QrsToday.svelte';
+    import ShareQR                  from './components/ShareQR.svelte';
     import { METHOD }               from '$lib/services/http-codes';
     import { formatDate }           from '$lib/utils/tempo';
     import type { QR, QRMapped }    from '$lib/models/qr/qr.model';
@@ -28,6 +29,11 @@
     let isDialogOpen    = $state( false );
     let qrToEdit        = $state<QR | null>( null );
     let isExporting     = $state( false );
+
+	// Share QR State
+	let shareUrl    = $state( '' );
+	let shareLabel  = $state( '' );
+	let isShareOpen = $state( false );
 
 
     const tabOptions = [
@@ -117,6 +123,13 @@
         isDialogOpen = false;
         qrToEdit     = null;
     }
+
+
+    function shareQR( url: string, label: string ): void {
+        shareUrl    = url;
+        shareLabel  = label;
+        isShareOpen = true;
+    }
 </script>
 
 
@@ -180,6 +193,7 @@
             isPending = { todayQuery.isPending }
             isError   = { todayQuery.isError }
             onEdit    = { handleEdit } 
+            { shareQR }
         />
     {/if}
 
@@ -200,3 +214,10 @@
         onSuccess = { handleSuccess }
     />
 </Dialog>
+
+<ShareQR 
+    url         = { shareUrl } 
+    label       = { shareLabel } 
+    bind:isOpen = { isShareOpen } 
+    hideButton  = { true }
+/>
