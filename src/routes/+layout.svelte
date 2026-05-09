@@ -1,7 +1,11 @@
 <script lang="ts">
-	import { Toaster, toast } from 'svelte-sonner';
-	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import { page } from '$app/state';
+
+    import {
+        QueryClient,
+        QueryClientProvider
+    }                           from '@tanstack/svelte-query';
+	import { Toaster, toast }   from 'svelte-sonner';
 
 	import './layout.css';
 
@@ -15,7 +19,9 @@
 
 	let { children } = $props();
 
-	const queryClient = new QueryClient();
+
+    const queryClient = new QueryClient();
+
 
 	$effect( () => {
 		if ( page.url.searchParams.get( 'error' ) === 'unauthorized' ) {
