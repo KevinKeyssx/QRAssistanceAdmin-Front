@@ -18,18 +18,21 @@
 
 
     export interface Props {
-        items     : QRMapped[];
-        isPending : boolean;
-        isError   : boolean;
-        onEdit    : ( qr: QR ) => void;
+		items     : QRMapped[];
+		isPending : boolean;
+		isError   : boolean;
+		onEdit    : ( qr: QR ) => void;
+		shareQR   : ( url: string, label: string ) => void;
     }
+
 
 
     let { 
         items, 
         isPending, 
         isError, 
-        onEdit 
+        onEdit,
+        shareQR
     }: Props = $props();
 
 
@@ -108,6 +111,7 @@
                         qr       = { item }
                         onEdit   = { () => onEdit( item.original ) }
                         onDelete = { () => deleteMutation.mutateAsync( item.id ) }
+                        { shareQR }
                     />
                 {/each}
             </div>
