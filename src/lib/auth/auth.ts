@@ -12,7 +12,7 @@ export const auth = betterAuth({
         google: {
             clientId        : ENV.GOOGLE.CLIENT_ID,
             clientSecret    : ENV.GOOGLE.CLIENT_SECRET,
-            mapUser: async (user: any, _account: any) => {
+            mapUser: async ( user: any, _account: any ) => {
                 return user;
             }
         }
@@ -27,7 +27,7 @@ export const auth = betterAuth({
         }
     },
     // Configuración de cookies segura
-    advanced: {
-        cookiePrefix: 'qr-assistance'
-    }
+    // advanced: {
+    //     cookiePrefix: 'qr-assistance'
+    // }
 });
